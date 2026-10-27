@@ -71,7 +71,7 @@ def is_safe_public_image_url(value: Optional[str], *, application_origin: str) -
     source's arbitrary image hosts are not automatically trusted for anonymous
     recipients. Authenticated owners retain the ordinary source-image behavior.
     """
-    if not is_safe_url(value):
+    if not is_safe_url(value) or not is_safe_url(application_origin):
         return False
     origin = _origin(value)
     return origin == _origin(application_origin) or origin in {

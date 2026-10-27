@@ -1,6 +1,6 @@
 """Public image destinations are reviewed, not arbitrary listing-controlled URLs."""
 
-from auctionradar.web import models
+from auctionradar.web import models, urls
 from tests.test_webapp_auth import _WebappFixture
 
 
@@ -72,3 +72,10 @@ class PublicShareImageTests(_WebappFixture):
         self.assertEqual(response.status_code, 200)
         photos = response.get_json()["item"]["photos"]
         self.assertEqual([photo["url"] for photo in photos], self.urls)
+
+    def test_malformed_application_origin_fails_closed(self):
+        for origin in ("https://example.org:invalid", "//example.org", ""):
+            with self.subTest(origin=origin):
+                self.assertFalse(
+                    urls.is_safe_public_image_url(self.urls[0], application_origin=origin)
+                )
