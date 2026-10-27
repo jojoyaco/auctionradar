@@ -11,13 +11,45 @@ using your own plain-language prompt, criteria, and published listing evidence.
 
 ![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-3776AB?style=flat-square&logo=python&logoColor=white)
 ![Self-hosted](https://img.shields.io/badge/Deployment-Self--hosted-2F7D4E?style=flat-square)
+![Proxmox VE LXC](https://img.shields.io/badge/Proxmox_VE-Debian_13_LXC-E57000?style=flat-square&logo=proxmox&logoColor=white)
 [![Noncommercial license](https://img.shields.io/badge/License-Noncommercial-14233A?style=flat-square)](LICENSE)
 
-[AI review](#your-search-your-ai-reviewer) · [Demo](#see-it-in-action) · [Quick start](#quick-start) · [Self-hosting](docs/SELF_HOSTING.md) · [Documentation](#documentation)
+[Install on Proxmox](#install-on-proxmox-ve) · [AI review](#your-search-your-ai-reviewer) · [Demo](#see-it-in-action) · [Local development](#quick-start) · [Documentation](#documentation)
 
 </div>
 
 ---
+
+## Install on Proxmox VE
+
+**One entry point. A guided setup. Your own unprivileged LXC.**
+
+Open **your Proxmox node → Shell** as root—not the console of an existing
+container—and run:
+
+```sh
+curl --proto '=https' --tlsv1.2 -fsSL https://raw.githubusercontent.com/jojoyaco/auctionradar/main/install.sh -o auctionradar-install.sh && bash auctionradar-install.sh install
+```
+
+The installer guides you through a free CTID, container storage, template
+storage, and bridge. It downloads a Debian 13 template and a commit-pinned
+AuctionRadar snapshot, builds the application package, and installs the services
+inside the **new** container. Defaults: **2 cores · 2 GB RAM · 12 GB disk · DHCP**.
+No manual release building or file transfers needed.
+
+**After installation:** configure HTTPS, then create an administrator from the
+container console with `auctionradar-create-admin admin`. The bootstrap web
+listener stays private to the container until HTTPS is configured. No default
+passwords, open registration, or Internet exposure are enabled for you.
+
+> **Preview installer:** targets amd64 Proxmox VE 8/9; a complete installation
+> on a real Proxmox host remains unverified. This is AuctionRadar's own helper,
+> **not an official Community Helper Script**. Downloading and running it trusts
+> this repository with root access—review the script first if preferred.
+
+[Installation guide, unattended mode, and dry-run](docs/PROXMOX.md) ·
+[HTTPS and first login](docs/SELF_HOSTING.md#production-https) ·
+[Read the installer](install.sh)
 
 ## Your search, your AI reviewer
 
@@ -135,7 +167,9 @@ history are distributed.
 
 ## Quick start
 
-For a local, loopback-only preview. Requires **Python 3.10+** and **curl 8.4+**.
+For a local, loopback-only development preview. For an LXC deployment, use
+the [Proxmox installer](#install-on-proxmox-ve) instead.
+Requires **Python 3.10+** and **curl 8.4+**.
 Poppler's `pdftotext` is optional for public PDF text extraction; OpenSSL is
 needed for TLS tests.
 
@@ -185,10 +219,11 @@ Prefer the terminal? Explore the public search CLI with:
 
 ## Self-host it on your own infrastructure
 
-Packaging and installation tools target a **fresh, unprivileged Debian 13 LXC**,
-with application code separate from persistent data. The installer does not
-configure public Internet access or enable scheduled jobs, and a full real-host
-Proxmox installation remains unverified.
+The [guided Proxmox VE installer](#install-on-proxmox-ve) creates a **fresh,
+unprivileged Debian 13 LXC**, with application code separate from persistent
+data. An [explicit offline-package path](docs/PROXMOX.md#manual-package-installation)
+is also available. The installer does not configure public Internet access or
+enable scheduled jobs, and a full real-host Proxmox installation remains unverified.
 
 - [Self-hosting, HTTPS, secrets, and backups](docs/SELF_HOSTING.md)
 - [Proxmox installation and packaging](docs/PROXMOX.md)
@@ -224,6 +259,8 @@ auctionradar/
 ├── web/                Accounts, workspaces, review, sharing, and UI
 └── defaults/           Empty configuration templates
 deploy/product/         Release packaging and LXC installation
+deploy/proxmox/         Guided Proxmox host installer
+install.sh              Downloadable install entry point
 docs/                   Operator and development guides
 tests/                  Automated tests and fixtures
 ```

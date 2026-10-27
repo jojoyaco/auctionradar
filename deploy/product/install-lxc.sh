@@ -145,6 +145,8 @@ chown auctionradar:auctionradar /etc/auctionradar/credential.key
 chmod 0600 /etc/auctionradar/credential.key
 install -o root -g auctionradar -m 0640 "$script_dir/auctionradar.env.example" \
     /etc/auctionradar/auctionradar.env
+install -o root -g root -m 0644 "$script_dir/nginx-https.conf.example" \
+    /etc/auctionradar/nginx-https.conf.example
 
 install -o root -g root -m 0644 "$script_dir/auctionradar-web.service" \
     /etc/systemd/system/auctionradar-web.service

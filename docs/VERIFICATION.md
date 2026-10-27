@@ -27,6 +27,27 @@ The reorganized `auctionradar/` package was checked with the following results:
 Legal review of the license and a full installation on a real Proxmox host remain
 pending.
 
+## Guided Proxmox installer — 2026-10-27
+
+The new `install.sh install` entry point and `deploy/proxmox/install.py` were
+checked with 19 focused tests, including real shell/bootstrap execution with a
+synthetic HTTP transport and the real package builder/host installer with fake
+PVE tools. No actual host packages, guests, or network configuration were changed.
+
+- The complete Python suite passed: **549 tests**, with `ResourceWarning`
+  treated as an error.
+- Three Node suites, Bash syntax checks, `pip check`, and Ruff lint/format
+  checks passed. Local README/operator-guide links and anchors were checked.
+- Source pinning, caller-stdin preservation, unsafe archive rejection,
+  unattended input validation, cancellation, read-only dry-run, cluster-wide
+  VM/CT conflicts, and installer handoff were exercised.
+- The HTTPS configuration example is retained inside new installations at
+  `/etc/auctionradar/nginx-https.conf.example`.
+
+These are simulated-host and extracted-application checks, **not** evidence of
+a successful end-to-end install on real Proxmox VE 8/9. The helper remains a
+project-maintained preview, not an accepted Community Helper Script.
+
 ## Run the checks
 
 Install the pinned runtime dependencies, then run the Python and Node suites:

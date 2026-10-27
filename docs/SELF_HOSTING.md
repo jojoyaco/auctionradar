@@ -1,5 +1,31 @@
 # Self-hosting and security
 
+## Start here: Proxmox VE
+
+For a new self-hosted instance, use the **guided Proxmox VE installer** from the
+**node's Shell as root**, not from inside an existing guest:
+
+```sh
+curl --proto '=https' --tlsv1.2 -fsSL https://raw.githubusercontent.com/jojoyaco/auctionradar/main/install.sh -o auctionradar-install.sh && bash auctionradar-install.sh install
+```
+
+Select the CTID, storage, template storage, and bridge. The script creates a new,
+unprivileged Debian 13 LXC and installs the application; no manual archive build
+or transfer is needed. It does not install packages on the Proxmox host, modify
+existing guests, or expose the web service. Defaults are 2 cores, 2048 MiB RAM,
+12 GiB disk, and DHCP. A local or remote AI provider is configured separately;
+these resources are not a sizing recommendation for running an LLM in the CT.
+
+The installer is a **project-maintained preview**, not a Community Helper
+Scripts entry. It targets amd64 PVE 8/9; a full real-host installation is still
+unverified. Read the [Proxmox guide](PROXMOX.md) for requirements, source trust,
+unattended inputs, download-free dry-runs, and the manual package alternative.
+
+**Installation is not the same as enabling browser access.** After it finishes:
+configure [production HTTPS](#production-https), create an administrator with
+`auctionradar-create-admin admin` in the new CT's console, sign in at your HTTPS
+hostname, and add your sources. There are no default credentials.
+
 ## Isolation and data layout
 
 Install AuctionRadar in a dedicated instance. Do not copy accounts, certificates,
@@ -36,7 +62,8 @@ rejects HTTP except for `/healthz` and static assets. Use HTTPS for login,
 registration, and certificate uploads.
 
 1. Provide a domain and TLS certificate. Review and adapt
-   `deploy/product/nginx-https.conf.example`.
+   `/etc/auctionradar/nginx-https.conf.example` (also available in the checkout
+   at `deploy/product/nginx-https.conf.example`).
 2. Set `AUCTIONRADAR_TRUSTED_HOSTS` to the exact domain and keep
    `AUCTIONRADAR_SESSION_SECURE=true`.
 3. Keep Gunicorn bound to loopback. Set
