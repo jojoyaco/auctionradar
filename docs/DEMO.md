@@ -44,8 +44,10 @@ they can change and remain subject to their owners' terms. See
 
 ### Scope and known limitations
 
-This capture demonstrates the review workflow, not end-to-end search queueing,
-authenticated BOE photographs, bidding, or a production deployment.
+This capture demonstrates the manual review workflow, not AI inference,
+end-to-end search queueing, authenticated BOE photographs, bidding, or a
+production deployment. The prompt-based AI review described in the README is
+an optional application feature; no AI provider was used in this recording.
 
 During preparation, a UI-queued worker exited before completing its run; a
 successful public search was instead completed by invoking the application

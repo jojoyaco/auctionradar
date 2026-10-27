@@ -4,20 +4,84 @@
 
 # AuctionRadar
 
-**Public auctions. Private research. A clearer view.**
+**Find the listing. Let AI check the fit. You make the final call.**
 
-A self-hosted workspace to discover listings, inspect the evidence,<br>
-and keep your notes and decisions in one place.
+A self-hosted workspace to discover public listings and review matches with AI,<br>
+using your own plain-language prompt, criteria, and published listing evidence.
 
 ![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-3776AB?style=flat-square&logo=python&logoColor=white)
 ![Self-hosted](https://img.shields.io/badge/Deployment-Self--hosted-2F7D4E?style=flat-square)
 [![Noncommercial license](https://img.shields.io/badge/License-Noncommercial-14233A?style=flat-square)](LICENSE)
 
-[Demo](#see-it-in-action) · [Quick start](#quick-start) · [Self-hosting](docs/SELF_HOSTING.md) · [Documentation](#documentation)
+[AI review](#your-search-your-ai-reviewer) · [Demo](#see-it-in-action) · [Quick start](#quick-start) · [Self-hosting](docs/SELF_HOSTING.md) · [Documentation](#documentation)
 
 </div>
 
 ---
+
+## Your search, your AI reviewer
+
+**Finding a listing is only the first step. Tell AuctionRadar what you want
+checked next—in your own words.**
+
+Each saved search has its own filters and optional AI prompt. Use the filters
+to narrow the catalog, then describe the preferences, exclusions, red flags,
+and missing information you want the AI to assess when a listing matches.
+You are not limited to a fixed checklist.
+
+```text
+Your search filters → Matching listings → AI reviews your prompt against the facts
+                                                        ↓
+                                   Recommended · Discarded · Needs review
+                                                        ↓
+                                       Your notes. Your final decision.
+```
+
+### Write the review you wish you had time to do
+
+For example, save a search for vans and give it this prompt:
+
+> I'm looking for a van for a personal camper conversion. Check whether the
+> published asking price is below €18,000 and mileage is under 120,000 km.
+> Reject listings explicitly described as accident-damaged or non-running.
+> If mileage, condition, or VAT status is missing or unclear, mark it as
+> needing review. Explain which published facts support the conclusion.
+> Do not treat the asking price as the final total cost or infer roadworthiness
+> from photographs.
+
+Or ask a housing search to flag confirmed occupancy, ownership shares, or
+missing possession information. Different saved searches can ask different
+questions—even about the same listing.
+
+### From a match to an explained assessment
+
+1. **Set the filters** in **My searches**: categories, sources, location,
+   published amounts, and other supported criteria.
+2. **Write your prompt and enable AI** for that saved search.
+3. **Review matching findings.** After a search run ingests listings, enabled
+   saved searches can assess the matches within configured processing limits.
+   You can also request an evaluation from **My searches**.
+4. **See the verdict and why.** Assessments include a short explanation,
+   supporting published evidence, missing information, and a score when
+   supported. An unknown relevant fact should mean **Needs review**, not a
+   made-up answer. Your manual OK/KO decisions remain separate and are not
+   overwritten by the AI.
+
+AI is **optional and disabled by default**. Configure an Ollama or supported
+OpenAI-compatible provider using `AUCTIONRADAR_AI_PROVIDER`,
+`AUCTIONRADAR_AI_BASE_URL`, and `AUCTIONRADAR_AI_MODEL`; OpenAI-compatible
+providers also require an API key, which can be supplied through
+`AUCTIONRADAR_AI_API_KEY_FILE`. Then enable AI per saved search.
+
+The configured model receives your prompt and selected listing facts—not your
+private review notes or account identity. If you choose a remote provider,
+that information leaves your server and provider charges may apply; do not put
+secrets in a prompt.
+
+> **An evidence-based second pass, not an independent inspection.** The AI
+> compares supplied listing data with your instructions. It does not browse
+> for additional evidence, visually inspect photos, verify the physical asset,
+> or establish its legal status. You stay in control of the final review.
 
 ## See it in action
 
@@ -32,8 +96,9 @@ and keep your notes and decisions in one place.
 **A real application, not a mockup.** Recorded locally using public BOE and
 Escogecasa results retrieved on October 27, 2026, with a disposable account.
 The walkthrough shows filtering, photos, a saved review, and light/dark themes.
-It does not demonstrate search execution or authenticated BOE access. Listings
-remain in their original language; displayed prices are not verified total costs.
+It does not demonstrate AI inference, search execution, or authenticated BOE
+access. Listings remain in their original language; displayed prices are not
+verified total costs.
 
 ## Built for a careful review
 
@@ -41,6 +106,7 @@ remain in their original language; displayed prices are not verified total costs
 | :--- | :--- |
 | **Discover** | Configure public HTTPS sources and run bounded searches with per-source coverage and limitations. |
 | **Focus** | Filter by asset category, source, location, published amount, photos, and review status. |
+| **Ask AI** | Give each saved search a custom prompt; assess matching listings against your preferences with explained, evidence-linked verdicts. |
 | **Inspect** | Browse listing photographs, published facts, document-reading status, and links to original portals. |
 | **Decide** | Mark findings as pending, OK, or KO; save private notes and revisit review history. |
 | **Keep control** | Separate each account's sources, searches, notes, decisions, and history into private workspaces. |
@@ -52,11 +118,15 @@ are included. Portal content is never automatically translated.
 ### A simple workflow
 
 ```text
-Configure sources → Run a search → Filter findings → Review the evidence
-                                                         ↓
-                                            Save notes and decisions
-                                                         ↓
-                                            Share a read-only listing
+Configure sources → Run a search → Match your saved-search criteria
+                                               ↓
+                                Optional AI review with your prompt
+                                               ↓
+                                  Inspect evidence and AI findings
+                                               ↓
+                                   Save your notes and decisions
+                                               ↓
+                                    Share a read-only listing
 ```
 
 Fresh installations start with **an empty source catalog and no default
