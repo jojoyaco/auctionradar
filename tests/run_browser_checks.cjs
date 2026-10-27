@@ -184,12 +184,19 @@ async function runSuite(suite) {
         error: String(error && error.stack || error),
       }));
     };
-    browser.on('context', context => {
+    const observeContext = context => {
       context.on('page', observePage);
       context.pages().forEach(observePage);
-    });
+    };
+    // Browser has no "context" event. Observe contexts created by scenario
+    // helpers too, not just this runner's first page (e.g. anonymous visitors).
+    const newContext = browser.newContext.bind(browser);
+    browser.newContext = async options => {
+      const context = await newContext(options);
+      observeContext(context);
+      return context;
+    };
     const context = await browser.newContext();
-    context.on('page', observePage);
     page = await context.newPage();
     observePage(page);
     page.setDefaultTimeout(15000);

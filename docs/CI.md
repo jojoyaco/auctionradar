@@ -51,7 +51,6 @@ matrix checks:
 node tests/ui_preferences.test.cjs
 node tests/review_detail_handler.test.cjs
 node tests/detail_next_handler.test.cjs
-node tests/language_change.test.cjs
 bash -n install.sh deploy/product/create-lxc.sh deploy/product/install-lxc.sh deploy/product/auctionradar-create-admin
 ```
 

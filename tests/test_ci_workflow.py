@@ -51,11 +51,16 @@ class CIWorkflowTests(unittest.TestCase):
     def test_python_and_browser_coverage_are_explicit(self):
         self.assertIn("python-version: ['3.10', '3.13']", WORKFLOW)
         self.assertEqual(WORKFLOW.count("tests/run_browser_checks.cjs --all"), 1)
-        self.assertIn("tests/language_change.test.cjs", WORKFLOW)
+        self.assertIn("tests/ui_preferences.test.cjs", WORKFLOW)
         self.assertIn("tests/public_share_image_policy.test.cjs", WORKFLOW)
         self.assertIn("AUCTIONRADAR_TEST_PYTHON", WORKFLOW)
         self.assertIn("AUCTIONRADAR_TEST_CHROME", WORKFLOW)
         self.assertIn("NODE_PATH", WORKFLOW)
+
+    def test_node_entry_points_exist(self):
+        for entry_point in re.findall(r"(?m)^\s+node (tests/[\w./-]+\.cjs)", WORKFLOW):
+            with self.subTest(entry_point=entry_point):
+                self.assertTrue((ROOT / entry_point).is_file())
 
 
 if __name__ == "__main__":
