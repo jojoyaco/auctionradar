@@ -56,6 +56,8 @@ class CIWorkflowTests(unittest.TestCase):
         self.assertIn("AUCTIONRADAR_TEST_PYTHON", WORKFLOW)
         self.assertIn("AUCTIONRADAR_TEST_CHROME", WORKFLOW)
         self.assertIn("NODE_PATH", WORKFLOW)
+        self.assertIn("poppler-utils", WORKFLOW)
+        self.assertIn("Run root-only simulated installer checks", WORKFLOW)
 
     def test_node_entry_points_exist(self):
         for entry_point in re.findall(r"(?m)^\s+node (tests/[\w./-]+\.cjs)", WORKFLOW):
