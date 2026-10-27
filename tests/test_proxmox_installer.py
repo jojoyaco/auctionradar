@@ -128,6 +128,11 @@ class WizardTests(unittest.TestCase):
             ["--gateway", "10.0.0.1"],
             ["--ip", "10.0.0.2/24"],
             ["--ip", "10.0.0.2/24", "--gateway", "10.1.0.1"],
+            ["--ip", "192.0.2.0/24", "--gateway", "192.0.2.1"],
+            ["--ip", "192.0.2.255/24", "--gateway", "192.0.2.1"],
+            ["--ip", "192.0.2.2/24", "--gateway", "192.0.2.0"],
+            ["--ip", "192.0.2.2/24", "--gateway", "192.0.2.255"],
+            ["--ip", "192.0.2.2/24", "--gateway", "192.0.2.2"],
             ["--hostname", "bad;command"],
             ["--cores", "0"],
             ["--disk-gb", "1"],
@@ -137,6 +142,16 @@ class WizardTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 installer.main(self.options + extra)
         self.assertFalse(any(c[0] == "pveam" for c in self.calls))
+
+    def test_point_to_point_ipv4_and_explicit_host_shell_instructions(self):
+        output = io.StringIO()
+        with mock.patch("sys.stdout", output):
+            self.assertEqual(
+                installer.main(self.options + ["--ip", "192.0.2.0/31", "--gateway", "192.0.2.1"]),
+                0,
+            )
+        self.assertIn("pct enter 900001", output.getvalue())
+        self.assertIn("Proxmox node", output.getvalue())
 
     def test_install_downloads_template_builds_product_then_reuses_host_installer(self):
         self.assertEqual(

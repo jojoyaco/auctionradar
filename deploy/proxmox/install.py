@@ -68,6 +68,12 @@ def validate(args):
         interface = ipaddress.IPv4Interface(args.ip)
         if not args.gateway or ipaddress.IPv4Address(args.gateway) not in interface.network:
             raise ValueError("Static IPv4 requires a gateway in the same subnet.")
+        gateway = ipaddress.IPv4Address(args.gateway)
+        unusable = {interface.network.network_address, interface.network.broadcast_address}
+        if gateway == interface.ip or (
+            interface.network.prefixlen < 31 and (interface.ip in unusable or gateway in unusable)
+        ):
+            raise ValueError("Static IPv4 and gateway must be distinct usable host addresses.")
     if args.nameserver:
         ipaddress.ip_address(args.nameserver)
 
@@ -238,7 +244,9 @@ def main(argv=None):
             if getattr(args, option):
                 command += ["--" + option, getattr(args, option)]
         subprocess.run(command, check=True)
-    print(f"\nInstalled CT {args.ctid}. Next steps in its Proxmox console:")
+    print(f"\nInstalled CT {args.ctid}. From the Proxmox node's root Shell, run:")
+    print(f"  pct enter {args.ctid}")
+    print("Then, inside the container (no guest console password is required):")
     print("  1. Configure HTTPS using /etc/auctionradar/nginx-https.conf.example")
     print("     and /etc/auctionradar/auctionradar.env (see the self-hosting guide).")
     print("  2. Run: auctionradar-create-admin admin (password entered privately).")

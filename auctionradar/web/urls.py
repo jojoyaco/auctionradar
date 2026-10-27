@@ -14,6 +14,13 @@ from typing import Iterable, Optional
 from urllib.parse import parse_qsl, urlsplit
 
 ALLOWED_SCHEMES = ("http", "https")
+# Anonymous pages must not automatically fetch listing-controlled destinations.
+# Keep this reviewed origin list in sync with the share-page CSP. Same-origin
+# images are also allowed (including disposable loopback browser fixtures).
+PUBLIC_SHARE_IMAGE_ORIGINS = (
+    "https://ngb-repositorio.urbaniza.com",
+    "https://subastas.boe.es",
+)
 SENSITIVE_QUERY = re.compile(
     r"password|passwd|secret|token|authorization|credential|cookie|session|csrf|api.?key|signature|(?:^|[_-])sig$",
     re.I,
@@ -44,6 +51,32 @@ def is_safe_url(value: Optional[str]) -> bool:
 
 def sanitise(value: Optional[str]) -> Optional[str]:
     return value if is_safe_url(value) else None
+
+
+def _origin(value: str) -> tuple:
+    parts = urlsplit(value)
+    port = parts.port
+    return (
+        parts.scheme.lower(),
+        (parts.hostname or "").lower().rstrip("."),
+        port if port is not None else (443 if parts.scheme.lower() == "https" else 80),
+    )
+
+
+def is_safe_public_image_url(value: Optional[str], *, application_origin: str) -> bool:
+    """Allow only the app itself and explicitly reviewed HTTPS image origins.
+
+    There is intentionally no DNS lookup: the share CSP enforces this same
+    origin boundary on the browser, including redirect destinations. A new
+    source's arbitrary image hosts are not automatically trusted for anonymous
+    recipients. Authenticated owners retain the ordinary source-image behavior.
+    """
+    if not is_safe_url(value):
+        return False
+    origin = _origin(value)
+    return origin == _origin(application_origin) or origin in {
+        _origin(allowed) for allowed in PUBLIC_SHARE_IMAGE_ORIGINS
+    }
 
 
 def sanitise_many(values: Optional[Iterable]) -> list:

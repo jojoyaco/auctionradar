@@ -22,8 +22,10 @@ unverified. Read the [Proxmox guide](PROXMOX.md) for requirements, source trust,
 unattended inputs, download-free dry-runs, and the manual package alternative.
 
 **Installation is not the same as enabling browser access.** After it finishes:
-configure [production HTTPS](#production-https), create an administrator with
-`auctionradar-create-admin admin` in the new CT's console, sign in at your HTTPS
+from the Proxmox node's root Shell, run `pct enter <CTID>` (using the chosen ID).
+This enters a guest root shell without a guest login/password. Configure
+[production HTTPS](#production-https), create an administrator inside the CT with
+`auctionradar-create-admin admin`, sign in at your HTTPS
 hostname, and add your sources. There are no default credentials.
 
 ## Isolation and data layout
@@ -107,6 +109,15 @@ Anonymous auction links are opaque, revocable, and read-only. They exclude
 private notes, decisions, accounts, sources, and authenticated material.
 Disabling the link creator invalidates their links. An authenticated recipient
 keeps their own workspace after opening a shared link.
+
+Anonymous pages load images only from the application's own origin and the
+reviewed HTTPS origins `ngb-repositorio.urbaniza.com` and `subastas.boe.es`.
+Other custom-source image origins remain available to authenticated owners but
+are omitted from shared payloads. The share-page Content Security Policy also
+blocks redirects to unapproved image origins, including recipient-local
+services. New anonymous image origins require a deliberate allowlist review;
+do not replace this policy with `http:`/`https:` wildcards. Direct portal links
+are still subject to their source's access conditions and rights.
 
 Source HTTPS requests require curl 8.4 or later. DNS answers and redirects are
 checked and the connection IP is pinned; outbound network filtering is

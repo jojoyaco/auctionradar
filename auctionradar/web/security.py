@@ -318,7 +318,15 @@ def apply_security_headers(response, cfg: Config):
     # the same origin; token links never send a Referer.
     private_link = request.path.startswith(("/share/", "/api/public/"))
     response.headers.setdefault("Referrer-Policy", "no-referrer" if private_link else "same-origin")
-    response.headers.setdefault("Content-Security-Policy", _DEFAULT_CSP)
+    csp = _DEFAULT_CSP
+    if private_link:
+        from .urls import PUBLIC_SHARE_IMAGE_ORIGINS
+
+        csp = csp.replace(
+            "img-src 'self' https: http:;",
+            "img-src 'self' " + " ".join(PUBLIC_SHARE_IMAGE_ORIGINS) + ";",
+        )
+    response.headers.setdefault("Content-Security-Policy", csp)
     response.headers.setdefault("Cross-Origin-Opener-Policy", "same-origin")
     return response
 

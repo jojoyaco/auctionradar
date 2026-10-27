@@ -153,10 +153,14 @@ try:
     gateway = ipaddress.IPv4Address(sys.argv[2])
 except ValueError:
     raise SystemExit(1)
-raise SystemExit(0 if gateway in interface.network else 1)
+unusable = {interface.network.network_address, interface.network.broadcast_address}
+valid = gateway in interface.network and gateway != interface.ip
+if interface.network.prefixlen < 31:
+    valid = valid and interface.ip not in unusable and gateway not in unusable
+raise SystemExit(0 if valid else 1)
 PY
     then
-        printf 'Static IP/gateway must be valid IPv4 addresses in one subnet.\n' >&2
+        printf 'Static IP/gateway must be distinct usable IPv4 host addresses in one subnet.\n' >&2
         exit 2
     fi
     network_config+=",gw=${gateway}"

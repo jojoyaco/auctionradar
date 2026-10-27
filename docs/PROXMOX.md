@@ -53,7 +53,16 @@ inspection. A repeat run with that CTID fails rather than overwriting it.
 
 ### Finish setup
 
-From the **new container's console**:
+From the **Proxmox node's root Shell**, enter the new container:
+
+```sh
+pct enter <CTID>
+```
+
+Replace `<CTID>` with the ID you selected. This opens a guest root shell without
+a guest password; do not assume the GUI's getty/login console has credentials.
+The installer deliberately sets no default guest or application password.
+Then, inside the container:
 
 1. Follow [production HTTPS](SELF_HOSTING.md#production-https). The example is
    retained at `/etc/auctionradar/nginx-https.conf.example`; configure your domain,

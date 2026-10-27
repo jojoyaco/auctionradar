@@ -63,7 +63,7 @@ def _canonical_url(value: Optional[str]) -> Optional[str]:
     return urls.sanitise(value)
 
 
-def _safe_photo(photo: Any, item_id=None, share_token=None) -> Optional[dict]:
+def _safe_photo(photo: Any, item_id=None, share_token=None, *, public=False) -> Optional[dict]:
     if not isinstance(photo, dict):
         return None
     if photo.get("media_id") is not None:
@@ -75,6 +75,8 @@ def _safe_photo(photo: Any, item_id=None, share_token=None) -> Optional[dict]:
         return private
     url = photo.get("url")
     if not urls.is_safe_url(url):
+        return None
+    if public and not urls.is_safe_public_image_url(url, application_origin=request.host_url):
         return None
     return {
         "url": url,
@@ -579,7 +581,9 @@ def _safe_listing_payload(data: dict, item_id=None, share_token=None, *, public=
                 )
             )
         ]
-    out["photos"] = [p for p in (_safe_photo(p, item_id, share_token) for p in photos_raw) if p]
+    out["photos"] = [
+        p for p in (_safe_photo(p, item_id, share_token, public=public) for p in photos_raw) if p
+    ]
     out["photo_notice"] = None
     if not private_public and data.get("source_id") in ("boe", "aeat"):
         for limitation in data.get("enrichment_limitations") or []:
