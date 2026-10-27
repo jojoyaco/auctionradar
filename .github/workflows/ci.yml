@@ -103,10 +103,11 @@ jobs:
       - name: Run all real-browser checks
         if: matrix.python-version == '3.13'
         run: |
-          AUCTIONRADAR_TEST_PYTHON="$(command -v python)" \
-          AUCTIONRADAR_TEST_CHROME="$(command -v google-chrome)" \
-          NODE_PATH="$(npm root --global)" \
-            node tests/run_browser_checks.cjs --all
+          export AUCTIONRADAR_TEST_PYTHON="$(command -v python)"
+          export AUCTIONRADAR_TEST_CHROME="$(command -v google-chrome)"
+          export NODE_PATH="$(npm root --global)"
+          node tests/run_browser_checks.cjs --all
+          node tests/public_share_image_policy.test.cjs
 
   dependency-audit:
     name: Python dependency audit
@@ -156,4 +157,4 @@ jobs:
 
       - name: Scan all Git history with redacted output
         run: |
-          "$RUNNER_TEMP/gitleaks" git --redact --no-banner --log-opts='--all' .
+          "$RUNNER_TEMP/gitleaks" git --redact --no-banner --log-opts='--all' --ignore-gitleaks-allow .

@@ -16,10 +16,14 @@ portals or contact provider, Proxmox, or production services.
   build/install/CLI smoke test on Python 3.13.
 - All real-browser scenarios on Python 3.13 using the Chrome preinstalled on the
   standard Ubuntu 24.04 runner and pinned `playwright-core` 1.64.1.
+- A browser check of the actual Flask share CSP: reviewed/same-origin images
+  load, but direct and redirected private image requests are blocked even when
+  the browser has local-network permission.
 - `pip-audit` for both hash-pinned requirements files with hashes required,
   pip-based resolution disabled, and strict collection failures enabled.
 - Gitleaks 8.30.1 over full Git history. The official Linux x64 release archive
-  is checked against its pinned SHA-256 before execution; output is redacted.
+  is checked against its pinned SHA-256 before execution; output is redacted
+  and inline `gitleaks:allow` comments do not suppress findings.
 
 The CI-only Ruff and setuptools pins live in `requirements-ci.txt`; both that
 file and `requirements.txt` are hash-checked at install/audit time. There are no
@@ -60,17 +64,22 @@ AUCTIONRADAR_TEST_PYTHON="$PWD/.venv/bin/python" \
 AUCTIONRADAR_TEST_CHROME=/path/to/chrome \
 NODE_PATH="$(npm root --global)" \
   node tests/run_browser_checks.cjs --all
+AUCTIONRADAR_TEST_PYTHON="$PWD/.venv/bin/python" \
+AUCTIONRADAR_TEST_CHROME=/path/to/chrome \
+NODE_PATH="$(npm root --global)" \
+  node tests/public_share_image_policy.test.cjs
 ```
 
 The Gitleaks invocation used by CI can also be run locally with Gitleaks 8.30.1:
 
 ```sh
-gitleaks git --redact --no-banner --log-opts='--all' .
+gitleaks git --redact --no-banner --log-opts='--all' --ignore-gitleaks-allow .
 ```
 
 ## Cost and account limits
 
-Standard GitHub-hosted runners are free and unlimited for public repositories.
+Standard GitHub-hosted runners have no per-minute charge for public repositories
+(GitHub's execution and abuse-prevention limits still apply).
 For private repositories, standard-runner minutes draw from the repository
 owner's plan quota, which is shared with its other repositories and users; usage
 above included quota may be billed. GitHub Free for organizations currently lists
