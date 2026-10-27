@@ -11,45 +11,13 @@ using your own plain-language prompt, criteria, and published listing evidence.
 
 ![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-3776AB?style=flat-square&logo=python&logoColor=white)
 ![Self-hosted](https://img.shields.io/badge/Deployment-Self--hosted-2F7D4E?style=flat-square)
-![Proxmox VE LXC](https://img.shields.io/badge/Proxmox_VE-Debian_13_LXC-E57000?style=flat-square&logo=proxmox&logoColor=white)
 [![Noncommercial license](https://img.shields.io/badge/License-Noncommercial-14233A?style=flat-square)](LICENSE)
 
-[Install on Proxmox](#install-on-proxmox-ve) · [AI review](#your-search-your-ai-reviewer) · [Demo](#see-it-in-action) · [Local development](#quick-start) · [Documentation](#documentation)
+[AI review](#your-search-your-ai-reviewer) · [Demo](#see-it-in-action) · [Installation](#installation) · [Documentation](#documentation)
 
 </div>
 
 ---
-
-## Install on Proxmox VE
-
-**One entry point. A guided setup. Your own unprivileged LXC.**
-
-Open **your Proxmox node → Shell** as root—not the console of an existing
-container—and run:
-
-```sh
-curl --proto '=https' --tlsv1.2 -fsSL https://raw.githubusercontent.com/jojoyaco/auctionradar/main/install.sh -o auctionradar-install.sh && bash auctionradar-install.sh install
-```
-
-The installer guides you through a free CTID, container storage, template
-storage, and bridge. It downloads a Debian 13 template and a commit-pinned
-AuctionRadar snapshot, builds the application package, and installs the services
-inside the **new** container. Defaults: **2 cores · 2 GB RAM · 12 GB disk · DHCP**.
-No manual release building or file transfers needed.
-
-**After installation:** configure HTTPS, then create an administrator from the
-container console with `auctionradar-create-admin admin`. The bootstrap web
-listener stays private to the container until HTTPS is configured. No default
-passwords, open registration, or Internet exposure are enabled for you.
-
-> **Preview installer:** targets amd64 Proxmox VE 8/9; a complete installation
-> on a real Proxmox host remains unverified. This is AuctionRadar's own helper,
-> **not an official Community Helper Script**. Downloading and running it trusts
-> this repository with root access—review the script first if preferred.
-
-[Installation guide, unattended mode, and dry-run](docs/PROXMOX.md) ·
-[HTTPS and first login](docs/SELF_HOSTING.md#production-https) ·
-[Read the installer](install.sh)
 
 ## Your search, your AI reviewer
 
@@ -165,7 +133,44 @@ Fresh installations start with **an empty source catalog and no default
 accounts**. No personal databases, certificates, saved searches, or installation
 history are distributed.
 
-## Quick start
+## Installation
+
+Choose a guided Proxmox deployment or a local development preview.
+
+### Install on Proxmox VE
+
+![Proxmox VE LXC](https://img.shields.io/badge/Proxmox_VE-Debian_13_LXC-E57000?style=flat-square&logo=proxmox&logoColor=white)
+
+**One entry point. A guided setup. Your own unprivileged LXC.**
+
+Open **your Proxmox node → Shell** as root—not the console of an existing
+container—and run:
+
+```sh
+curl --proto '=https' --tlsv1.2 -fsSL https://raw.githubusercontent.com/jojoyaco/auctionradar/main/install.sh -o auctionradar-install.sh && bash auctionradar-install.sh install
+```
+
+The installer guides you through a free CTID, container storage, template
+storage, and bridge. It downloads a Debian 13 template and a commit-pinned
+AuctionRadar snapshot, builds the application package, and installs the services
+inside the **new** container. Defaults: **2 cores · 2 GB RAM · 12 GB disk · DHCP**.
+No manual release building or file transfers needed.
+
+**After installation:** configure HTTPS, then create an administrator from the
+container console with `auctionradar-create-admin admin`. The bootstrap web
+listener stays private to the container until HTTPS is configured. No default
+passwords, open registration, or Internet exposure are enabled for you.
+
+> **Preview installer:** targets amd64 Proxmox VE 8/9; a complete installation
+> on a real Proxmox host remains unverified. This is AuctionRadar's own helper,
+> **not an official Community Helper Script**. Downloading and running it trusts
+> this repository with root access—review the script first if preferred.
+
+[Installation guide, unattended mode, and dry-run](docs/PROXMOX.md) ·
+[HTTPS and first login](docs/SELF_HOSTING.md#production-https) ·
+[Read the installer](install.sh)
+
+### Local development
 
 For a local, loopback-only development preview. For an LXC deployment, use
 the [Proxmox installer](#install-on-proxmox-ve) instead.
@@ -173,7 +178,7 @@ Requires **Python 3.10+** and **curl 8.4+**.
 Poppler's `pdftotext` is optional for public PDF text extraction; OpenSSL is
 needed for TLS tests.
 
-### 1. Install
+#### 1. Install
 
 ```sh
 git clone https://github.com/jojoyaco/auctionradar.git
@@ -183,7 +188,7 @@ python3 -m venv .venv
 .venv/bin/pip install --no-deps -e .
 ```
 
-### 2. Create your workspace
+#### 2. Create your workspace
 
 ```sh
 export AUCTIONRADAR_WORKSPACE_MODE=private
@@ -195,7 +200,7 @@ export AUCTIONRADAR_SESSION_SECURE=false
 .venv/bin/python -m auctionradar.web.manage create-user --username admin --admin
 ```
 
-### 3. Start the application
+#### 3. Start the application
 
 ```sh
 .venv/bin/gunicorn --bind 127.0.0.1:8000 'auctionradar.web:create_app()'
@@ -217,7 +222,7 @@ Prefer the terminal? Explore the public search CLI with:
 .venv/bin/python -m auctionradar.cli --help
 ```
 
-## Self-host it on your own infrastructure
+### Production setup and security
 
 The [guided Proxmox VE installer](#install-on-proxmox-ve) creates a **fresh,
 unprivileged Debian 13 LXC**, with application code separate from persistent
