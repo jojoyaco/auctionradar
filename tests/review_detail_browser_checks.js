@@ -63,8 +63,26 @@ async function checkDetailReviewAutosave(page) {
   expect((await review(ids.house)).notes==='Server note '+ids.house,'Only explicit note save may change notes');
   let extraPosts=0;const listener=request=>{if(request.method()==='POST'&&request.url().endsWith('/review'))extraPosts++;};
   page.on('request',listener);
-  await page.evaluate(()=>window.AuctionRadarUI.setLanguage('en'));
+  await page.locator('#review-notes').focus();
+  await page.locator('#review-notes').evaluate(notes=>notes.setSelectionRange(3,8));
+  await page.evaluate(()=>{
+    window.__languageChangeEvents=[];
+    document.addEventListener('auctionradar:languagechange',event=>window.__languageChangeEvents.push(event.detail.lang));
+    window.AuctionRadarUI.setLanguage('es');
+  });
+  const firstLanguageChange=await page.evaluate(()=>({
+    events:window.__languageChangeEvents,
+    activeId:document.activeElement&&document.activeElement.id,
+    selection:[document.querySelector('#review-notes').selectionStart,document.querySelector('#review-notes').selectionEnd],
+  }));
+  expect(firstLanguageChange.events.length===1&&firstLanguageChange.events[0]==='es','One language change must emit exactly one notification');
+  expect(firstLanguageChange.activeId==='review-notes','Language change preserves input focus');
+  expect(firstLanguageChange.selection[0]===3&&firstLanguageChange.selection[1]===8,'Language change preserves the draft selection');
   expect(await page.locator('#review-notes').inputValue()==='Unsaved local draft','Locale change preserves draft');
+  await page.evaluate(()=>window.AuctionRadarUI.setLanguage('en'));
+  const secondLanguageChange=await page.evaluate(()=>window.__languageChangeEvents);
+  expect(JSON.stringify(secondLanguageChange)===JSON.stringify(['es','en']),'Each locale change must emit one notification');
+  expect(await page.locator('#review-notes').inputValue()==='Unsaved local draft','Returning locale preserves draft');
   expect(extraPosts===0,'Restoring a draft must never autosave a status');page.off('request',listener);
   const noteSave=page.waitForResponse(r=>r.url().endsWith('/review')&&r.request().method()==='POST');
   await page.locator('[data-save-review]').click();await noteSave;

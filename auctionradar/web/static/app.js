@@ -4086,10 +4086,9 @@
       openShortcutsDialog();
       shortcutsDialogState.lastFocus = previous;
     }
-    // Notify external modules so they can update their rendered text.
-    document.dispatchEvent(new CustomEvent("auctionradar:languagechange", {
-      detail: { lang: window.AuctionRadarUI ? window.AuctionRadarUI.language() : "es" }, bubbles: true
-    }));
+    // ui.js owns the languagechange event and has already notified external modules.
+    // This handler only refreshes this app's rendered content; redispatching here
+    // would synchronously call this same listener again.
     var focus = activeId ? document.getElementById(activeId) : (active && active.isConnected ? active : null);
     if (focus) {
       focus.focus({preventScroll: true});
