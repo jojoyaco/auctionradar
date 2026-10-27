@@ -1,0 +1,54 @@
+name: Bug report
+description: Report reproducible behavior before proposing a fix.
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Search existing issues first. This issue must exist before its PR is opened.
+        Do not disclose vulnerabilities or secrets here; see the security guidance in CONTRIBUTING.md.
+  - type: checkboxes
+    id: preparation
+    attributes:
+      label: Before reporting
+      options:
+        - label: I searched existing issues and did not find an equivalent report.
+          required: true
+        - label: I removed credentials, share tokens, private notes, and production data from this report.
+          required: true
+  - type: textarea
+    id: behavior
+    attributes:
+      label: Expected and actual behavior
+      description: Describe the difference and its impact.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Minimal reproduction
+      description: Give steps using synthetic data where possible; include observed errors.
+      placeholder: |
+        1. Configure...
+        2. Run...
+        3. Observe...
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Version and environment
+      description: Commit/version, Python/browser/OS, installation method, and PVE version if relevant. No credentials or private host details.
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Sanitized evidence
+      description: Optional minimal logs, screenshots, fixture, or public source context. Do not upload databases or certificates.
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: What would confirm the fix?
+      description: Observable acceptance criteria or a proposed regression test.
+    validations:
+      required: true

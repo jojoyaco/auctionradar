@@ -1,0 +1,60 @@
+name: Change proposal
+description: Discuss a feature, refactor, documentation update, or maintenance task before its PR.
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Every PR, including docs-only and draft PRs, needs an issue opened first.
+        Discuss significant design, dependency, security, or deployment changes before implementation.
+  - type: checkboxes
+    id: preparation
+    attributes:
+      label: Before proposing
+      options:
+        - label: I searched existing issues and did not find an equivalent proposal.
+          required: true
+        - label: This proposal does not contain secrets or private user/production data.
+          required: true
+  - type: dropdown
+    id: kind
+    attributes:
+      label: Change type
+      options:
+        - Feature
+        - Refactor or performance
+        - Documentation
+        - Tests or maintenance
+        - Packaging or deployment
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem or user need
+      description: Explain the need before prescribing a solution.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed scope and alternatives
+      description: Describe the change, alternatives considered, and explicit non-goals.
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: List observable outcomes and how to validate them.
+      placeholder: |
+        - [ ] ...
+        - [ ] ...
+    validations:
+      required: true
+  - type: textarea
+    id: impact
+    attributes:
+      label: Compatibility, privacy, and operational impact
+      description: Note new dependencies, API/schema changes, migration/rollback needs, external services, license impact, or None.
+    validations:
+      required: true
