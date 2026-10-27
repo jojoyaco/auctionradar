@@ -1,6 +1,8 @@
+import hashlib
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import Mock, patch
 
 import auctionradar.documents as document_reader
 
@@ -8,18 +10,38 @@ import auctionradar.documents as document_reader
 class DocumentTests(unittest.TestCase):
     def test_failed_fetch_is_not_read(self):
         item = {"documents": [{"url": "https://example.org/x.pdf"}]}
+        context = {"max_documents": 2}
+        fetch = Mock(side_effect=TimeoutError("timeout"))
 
-        def fail(url, context):
-            raise TimeoutError("timeout")
+        with patch.object(document_reader.shutil, "which", return_value="/mock/pdftotext"):
+            document_reader.enrich_documents(item, context, fetch=fetch)
 
-        document_reader.enrich_documents(item, {"max_documents": 2}, fetch=fail)
+        fetch.assert_called_once_with("https://example.org/x.pdf", context)
         self.assertEqual(item["documents"][0]["read_status"], "fetch_failed")
         self.assertIsNone(item["documents"][0]["extracted_text"])
 
     def test_html_login_is_not_pdf(self):
         item = {"documents": [{"url": "https://example.org/x.pdf"}]}
-        document_reader.enrich_documents(item, {}, fetch=lambda u, c: b"<html>Login</html>")
+        context = {}
+        fetch = Mock(return_value=b"<html>Login</html>")
+
+        with patch.object(document_reader.shutil, "which", return_value="/mock/pdftotext"):
+            document_reader.enrich_documents(item, context, fetch=fetch)
+
+        fetch.assert_called_once_with("https://example.org/x.pdf", context)
         self.assertEqual(item["documents"][0]["read_status"], "not_pdf")
+
+    def test_missing_converter_is_reported_without_fetching(self):
+        item = {"documents": [{"url": "https://example.org/x.pdf"}]}
+        fetch = Mock()
+
+        with patch.object(document_reader.shutil, "which", return_value=None) as which:
+            document_reader.enrich_documents(item, {}, fetch=fetch)
+
+        which.assert_called_once_with("pdftotext")
+        fetch.assert_not_called()
+        self.assertEqual(item["documents"][0]["read_status"], "converter_unavailable")
+        self.assertIsNone(item["documents"][0]["extracted_text"])
 
     def test_limit_is_explicit(self):
         item = {
@@ -49,11 +71,7 @@ class DocumentTests(unittest.TestCase):
         self.assertEqual(item["documents"][0]["read_status"], "not_read_site_policy")
 
     def test_pdf_text_extraction(self):
-        import shutil
-
-        if not shutil.which("pdftotext"):
-            self.skipTest("Poppler opcional no instalado")
-        # Minimal valid document; verify real conversion, not a mocked converter.
+        # Minimal valid document; the optional converter's command contract is mocked.
         objects = [
             b"<< /Type /Catalog /Pages 2 0 R >>",
             b"<< /Type /Pages /Kids [3 0 R] /Count 1 >>",
@@ -78,14 +96,42 @@ class DocumentTests(unittest.TestCase):
             + b"\n%%EOF"
         )
         item = {"documents": [{"url": "https://example.org/a.pdf"}]}
+        output = b"Condiciones oficiales 2026\n"
+        fetch = Mock(return_value=data)
+
+        def run_converter(command, **kwargs):
+            self.assertEqual(command[0], "/mock/pdftotext")
+            self.assertEqual(command[1], "-layout")
+            self.assertEqual(command[-1], "-")
+            pdf = Path(command[2])
+            self.assertTrue(pdf.is_file())
+            self.assertEqual(pdf.read_bytes(), data)
+            self.assertTrue(kwargs["capture_output"])
+            self.assertEqual(kwargs["timeout"], 15)
+            return document_reader.subprocess.CompletedProcess(command, 0, output, b"")
+
         with tempfile.TemporaryDirectory() as tmp:
-            document_reader.enrich_documents(
-                item, {"raw_dir": Path(tmp), "observed_at": "2026-10-17"}, fetch=lambda u, c: data
-            )
+            context = {"raw_dir": Path(tmp), "observed_at": "2026-10-17"}
+            with (
+                patch.object(
+                    document_reader.shutil, "which", return_value="/mock/pdftotext"
+                ) as which,
+                patch.object(document_reader.subprocess, "run", side_effect=run_converter) as run,
+            ):
+                document_reader.enrich_documents(item, context, fetch=fetch)
+
+            which.assert_called_once_with("pdftotext")
+            fetch.assert_called_once_with("https://example.org/a.pdf", context)
+            run.assert_called_once()
             doc = item["documents"][0]
             self.assertEqual(doc["read_status"], "text_extracted")
-            self.assertIn("Condiciones oficiales 2026", doc["extracted_text"])
+            self.assertEqual(doc["extracted_text"], output.decode())
             self.assertEqual(doc["text_scope"], "all_pages_text_only_no_ocr")
+            self.assertEqual(doc["observed_at"], "2026-10-17")
+            expected_sha = hashlib.sha256(data).hexdigest()
+            self.assertEqual(doc["sha256"], expected_sha)
+            self.assertEqual(doc["text_path"], str(Path(tmp) / (expected_sha + ".pdf.txt")))
+            self.assertEqual(Path(doc["text_path"]).read_text(encoding="utf-8"), output.decode())
 
 
 if __name__ == "__main__":
