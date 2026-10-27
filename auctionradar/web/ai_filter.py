@@ -713,6 +713,13 @@ class AIProviderError(Exception):
         self.attempts = attempts
 
 
+class _RejectProviderRedirects(urllib.request.HTTPRedirectHandler):
+    """Fail closed on provider redirects so POST credentials stay at the endpoint."""
+
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        raise urllib.error.HTTPError(newurl, code, "provider redirects are disabled", headers, fp)
+
+
 def _validate_base_url(provider, base_url):
     if not base_url:
         return ERROR_UNCONFIGURED
@@ -1096,7 +1103,7 @@ def evaluate_item(prompt, item, criteria=None, settings=None, *, opener=None, no
         base["limitations"].append("document_excerpts_up_to_4000_characters")
 
     if opener is None:
-        opener = urllib.request.urlopen
+        opener = urllib.request.build_opener(_RejectProviderRedirects()).open
 
     try:
         body = _send_with_retries(url, payload, headers, settings=cfg, opener=opener)

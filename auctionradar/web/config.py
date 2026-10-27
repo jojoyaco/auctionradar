@@ -188,10 +188,9 @@ def build_config(env: Optional[dict] = None) -> Config:
     if (
         cfg.ENVIRONMENT in {"production", "prod"}
         and cfg.WORKSPACE_MODE == "private"
-        and cfg.REGISTRATION_ENABLED
         and not cfg.SESSION_COOKIE_SECURE
     ):
-        raise RuntimeError("production registration requires Secure session cookies and HTTPS")
+        raise RuntimeError("private production requires Secure session cookies and HTTPS")
 
     # Allow tests to override catalog/profile/feedback paths so we can
     # point at fixtures without touching the real CLI data.

@@ -324,6 +324,43 @@ class RegistrationTests(_WebappFixture):
         )
         self.assertEqual(signup.status_code, 201, signup.get_json())
 
+    def test_private_production_requires_secure_cookie_with_or_without_registration(self):
+        from auctionradar.web.config import build_config
+
+        for registration_enabled in ("false", "true"):
+            with self.subTest(registration_enabled=registration_enabled):
+                environment = {
+                    "AUCTIONRADAR_ENV": "production",
+                    "AUCTIONRADAR_WORKSPACE_MODE": "private",
+                    "AUCTIONRADAR_REGISTRATION_ENABLED": registration_enabled,
+                    "AUCTIONRADAR_SESSION_SECURE": "false",
+                    "AUCTIONRADAR_SECRET_KEY": "synthetic-production-test-secret",
+                }
+                with self.assertRaises(RuntimeError):
+                    build_config(environment)
+
+                environment["AUCTIONRADAR_SESSION_SECURE"] = "true"
+                config = build_config(environment)
+                self.assertTrue(config.SESSION_COOKIE_SECURE)
+
+    def test_development_testing_config_can_keep_non_secure_private_cookies(self):
+        from auctionradar.web.config import build_config
+
+        for registration_enabled in ("false", "true"):
+            with self.subTest(registration_enabled=registration_enabled):
+                config = build_config(
+                    {
+                        "AUCTIONRADAR_ENV": "development",
+                        "AUCTIONRADAR_TESTING": "true",
+                        "AUCTIONRADAR_WORKSPACE_MODE": "private",
+                        "AUCTIONRADAR_REGISTRATION_ENABLED": registration_enabled,
+                        "AUCTIONRADAR_SESSION_SECURE": "false",
+                        "AUCTIONRADAR_SECRET_KEY": "synthetic-development-test-secret",
+                    }
+                )
+                self.assertTrue(config.TESTING)
+                self.assertFalse(config.SESSION_COOKIE_SECURE)
+
     def _private_app(self, **overrides):
         config = {
             "TESTING": True,
