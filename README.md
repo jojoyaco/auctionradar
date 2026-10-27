@@ -296,6 +296,7 @@ packaging checks, linting, and what passing tests do **not** establish.
 | [Agent guide](AGENTS.md) | Work safely with coding agents in this repository. |
 | [Continuous integration](docs/CI.md) | Run the checks locally and understand GitHub Actions free-tier limits. |
 | [Security policy](SECURITY.md) | Report a vulnerability privately and understand support limits. |
+| [Publication checklist](docs/RELEASING.md) | Separate public-source readiness, artifact releases, and real installation evidence. |
 | [Verification](docs/VERIFICATION.md) | Run checks and understand their coverage. |
 | [Demo assets](docs/DEMO.md) | Reuse the video, GIF, and screenshots or regenerate the GIF. |
 | [Licensing](docs/LICENSING.md) | Understand permitted use and restrictions. |
