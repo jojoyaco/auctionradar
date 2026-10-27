@@ -13,7 +13,7 @@ using your own plain-language prompt, criteria, and published listing evidence.
 ![Self-hosted](https://img.shields.io/badge/Deployment-Self--hosted-2F7D4E?style=flat-square)
 [![Noncommercial license](https://img.shields.io/badge/License-Noncommercial-14233A?style=flat-square)](LICENSE)
 
-[AI review](#your-search-your-ai-reviewer) · [Demo](#see-it-in-action) · [Installation](#installation) · [Documentation](#documentation)
+[AI review](#your-search-your-ai-reviewer) · [Demo](#see-it-in-action) · [Installation](#installation) · [Documentation](#documentation) · [Contributing](CONTRIBUTING.md)
 
 </div>
 
@@ -290,10 +290,21 @@ packaging checks, linting, and what passing tests do **not** establish.
 | [Self-hosting and security](docs/SELF_HOSTING.md) | Configure HTTPS, accounts, certificates, backups, and isolation. |
 | [Proxmox](docs/PROXMOX.md) | Package the application and prepare a new LXC. |
 | [Architecture](docs/ARCHITECTURE.md) | Understand package boundaries and the search/review flow. |
+| [Contributing](CONTRIBUTING.md) | Open an issue first, name commits/PRs, and prepare a reviewable change. |
+| [Agent guide](AGENTS.md) | Work safely with coding agents in this repository. |
 | [Verification](docs/VERIFICATION.md) | Run checks and understand their coverage. |
 | [Demo assets](docs/DEMO.md) | Reuse the video, GIF, and screenshots or regenerate the GIF. |
 | [Licensing](docs/LICENSING.md) | Understand permitted use and restrictions. |
 | [Third-party notices](THIRD_PARTY_NOTICES.md) | Review dependency and data terms. |
+
+## Contributing
+
+Please **open or reuse an issue before opening a PR**, including documentation
+changes. Use Conventional Commits for authored commits and PR titles, include
+validation evidence, and request maintainer review. Start with
+[CONTRIBUTING.md](CONTRIBUTING.md); coding agents should also read
+[AGENTS.md](AGENTS.md). The canonical technical overview is
+[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
 ## License
 

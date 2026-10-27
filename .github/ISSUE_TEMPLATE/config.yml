@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Security and sensitive-data guidance
+    url: https://github.com/jojoyaco/auctionradar/blob/main/CONTRIBUTING.md#security-and-sensitive-data
+    about: Coordinate sensitive reports privately; do not publish exploit details or credentials in an issue.
