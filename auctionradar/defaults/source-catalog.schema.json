@@ -1,0 +1,302 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:auctionradar:product:source-catalog:schema:1.0.0",
+  "title": "AuctionRadar product source catalog",
+  "description": "Draft 2020-12 schema for portable auction-source records and run reports.",
+  "$ref": "#/$defs/catalog",
+  "$defs": {
+    "sourceId": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9]*(?:_[a-z0-9]+)*$",
+      "description": "Stable source identifier. References must exist in the linked catalog's sources."
+    },
+    "assetType": {
+      "enum": [
+        "housing",
+        "vehicles",
+        "land",
+        "commercial",
+        "boats",
+        "machinery",
+        "electronics",
+        "furniture",
+        "collectibles",
+        "other"
+      ]
+    },
+    "buyerType": {
+      "enum": [
+        "individual",
+        "business",
+        "automotive_professional"
+      ]
+    },
+    "verificationStatus": {
+      "enum": [
+        "verified",
+        "partial",
+        "unverified_current_access",
+        "corporate_alias"
+      ]
+    },
+    "alias": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "url": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uri",
+              "pattern": "^https://"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "verification": {
+          "$ref": "#/$defs/verificationStatus"
+        },
+        "notes": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "name",
+        "url",
+        "verification",
+        "notes"
+      ],
+      "additionalProperties": false,
+      "description": "Related alias or brand; does not add an independent inventory."
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "name",
+        "url",
+        "asset_types",
+        "enabled",
+        "adapter_id"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/sourceId"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "url": {
+          "type": "string",
+          "pattern": "^https://",
+          "maxLength": 2048
+        },
+        "asset_types": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/assetType"
+          }
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "adapter_id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*$"
+        }
+      }
+    },
+    "verificationResource": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/sourceId"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "url": {
+          "type": "string",
+          "format": "uri",
+          "pattern": "^https://"
+        },
+        "purpose": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "url",
+        "purpose"
+      ],
+      "additionalProperties": false
+    },
+    "runStatus": {
+      "enum": [
+        "requires_user_registration",
+        "authentication_required",
+        "eligibility_unknown",
+        "blocked",
+        "no_matches",
+        "checked"
+      ]
+    },
+    "runResult": {
+      "type": "object",
+      "properties": {
+        "source_id": {
+          "$ref": "#/$defs/sourceId"
+        },
+        "status": {
+          "$ref": "#/$defs/runStatus"
+        },
+        "public_discovery_attempted": {
+          "type": "boolean"
+        },
+        "account_used": {
+          "type": "boolean"
+        },
+        "eligibility_status": {
+          "enum": [
+            "eligible",
+            "ineligible",
+            "unknown"
+          ]
+        },
+        "candidate_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "candidate_urls": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "uri",
+            "pattern": "^https://"
+          },
+          "minItems": 0,
+          "uniqueItems": true
+        },
+        "notes": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 0
+        },
+        "next_action": {
+          "enum": [
+            "none",
+            "public_discovery",
+            "user_registration",
+            "user_authentication",
+            "verify_eligibility",
+            "check_access",
+            "review_candidate_documents"
+          ]
+        }
+      },
+      "required": [
+        "source_id",
+        "status",
+        "public_discovery_attempted",
+        "account_used",
+        "eligibility_status",
+        "candidate_count",
+        "candidate_urls",
+        "notes",
+        "next_action"
+      ],
+      "additionalProperties": false,
+      "description": "Query result: never report no_matches when blocked or unauthenticated. candidate_count must match recorded candidates, or notes must explain the limited scope."
+    },
+    "runReport": {
+      "type": "object",
+      "properties": {
+        "schema_version": {
+          "const": "1.0.0"
+        },
+        "catalog_ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "search_profile_ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "started_on": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "completed_on": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "date-time"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "results": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/runResult"
+          },
+          "minItems": 0
+        },
+        "notes": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 0
+        }
+      },
+      "required": [
+        "schema_version",
+        "catalog_ref",
+        "search_profile_ref",
+        "started_on",
+        "completed_on",
+        "results",
+        "notes"
+      ],
+      "additionalProperties": false,
+      "description": "Optional informational run schema; a catalog entry alone does not establish that an adapter is implemented."
+    },
+    "catalog": {
+      "type": "object",
+      "required": [
+        "sources"
+      ],
+      "properties": {
+        "sources": {
+          "type": "array",
+          "minItems": 0,
+          "maxItems": 100,
+          "items": {
+            "$ref": "#/$defs/source"
+          }
+        }
+      }
+    }
+  }
+}

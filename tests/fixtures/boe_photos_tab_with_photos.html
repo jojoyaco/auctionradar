@@ -1,0 +1,45 @@
+<!--
+  Fixture sanitizado: pestaña "Bienes" con galería pública hipotética.
+
+  Representa la estructura que el BOE publicaría si la galería privada
+  estuviera disponible sin login. No es HTML real capturado (el portal real
+  oculta estas imágenes tras "Iniciar sesión"); el fixture existe para
+  ejercitar el contrato canónico de `collect_boe_photos`:
+  - <img> con src, data-src (lazy), data-original (lazy).
+  - Mezcla con logos institucionales que DEBEN filtrarse.
+  - <h4>Bien 1 - Bien mueble (Buques)</h4> marca el lote.
+
+  Subasta: SUB-AT-2026-26R0886002107 (Bien 1 — Buque TANOKA).
+  Las URLs de fotos son paths públicos representativos bajo
+  `/reg/fotos/<idSub>/<NN>.jpg`, NO credenciales reales.
+-->
+<!DOCTYPE html>
+<html lang="es">
+  <head><meta charset="utf-8" /><title>Detalle Bien 1 - TANOKA</title></head>
+  <body>
+    <div id="idBloqueDatos3">
+      <div class="bloque" id="idBloqueLote1">
+        <div class="caja">BUQUES EMBARCACIÓN TANOKA</div>
+        <div>
+          <h3>Datos del bien subastado</h3>
+          <div>
+            <h4>Bien 1 - Bien mueble (Buques)</h4>
+            <table>
+              <tr><th>Referencia Registral</th><td>20240009324</td></tr>
+            </table>
+            <h5>Galería pública del bien</h5>
+            <div class="galeria">
+              <img src="/reg/fotos/SUB-AT-2026-26R0886002107/01.jpg" alt="Vista general del buque">
+              <img data-src="/reg/fotos/SUB-AT-2026-26R0886002107/02.jpg" alt="Casco y matrícula">
+              <img data-original="/reg/fotos/SUB-AT-2026-26R0886002107/03.jpg" alt="Cubierta">
+              <img src="/reg/fotos/SUB-AT-2026-26R0886002107/04.jpg" alt="Detalle del motor">
+              <img src="/reg/fotos/SUB-AT-2026-26R0886002107/plano.jpg" alt="Plano de la embarcación">
+              <img src="/imagenes/logoMPR.png" alt="Ministerio de la Presidencia">
+              <img src="/imagenes/portal_subastas_270.png" alt="Portal de Subastas">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

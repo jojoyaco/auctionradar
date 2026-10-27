@@ -1,0 +1,122 @@
+<!--
+  Fixture sanitizado para tests BOE.
+
+  Representa la página real `/detalleSubasta.php?idSub=SUB-AT-2026-26R0886002107&ver=3`
+  capturada por GET público el 2026-10-18. El bloque del Bien incluye el
+  mensaje oficial "Para consultar la información complementaria debe Iniciar
+  sesión", que es la limitación honesta que `enrich_boe` debe respetar:
+  las únicas <img> son institucionales (`/imagenes/logo*`, `portal_subastas`)
+  y la galería privada del bien está oculta tras autenticación.
+
+  Estructura conservada:
+  - Cabecera con logos del Ministerio/Portal/BOE (institucionales, a filtrar).
+  - Navegación a pestañas (ver=1 General, ver=2 Autoridad, ver=3 Bienes,
+    ver=5 Pujas) — `enrich_boe` debe seguir SOLO `Bienes`.
+  - Bloque `idBloqueLote1` con un único Bien (Buque TANOKA).
+  - Tabla oficial y mensaje "Iniciar sesión" para información complementaria.
+
+  Datos del Bien preservados: Descripción, Referencia Registral, Visitable,
+  Cargas, Inscripción registral, Título jurídico. Sin secret ni auth.
+
+  Uso: tests BOE que verifiquen "no photos", la preservación del
+  classification helper Buque, y la limitación honesta del portal.
+-->
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <title>Portal de Subastas</title>
+    <link rel="shortcut icon" href="/favicon.ico" />
+  </head>
+  <body>
+    <div id="cabecera">
+      <span id="logoPresidencia">
+        <img src="/imagenes/logoMPR.png" srcset="/imagenes/logoMPR.svg" alt="Ministerio de la Presidencia">
+      </span>
+      <span class="movil">
+        <a href="/" title="Ir al inicio">
+          <img alt="Portal de Subastas" src="/imagenes/portal_subastas_270.png" srcset="/imagenes/portal_subastas_270.svg" />
+        </a>
+      </span>
+      <a href="https://www.boe.es" title="BOE">
+        <img src="/imagenes/logo_boe.png" alt="Agencia Estatal BOE">
+      </a>
+      <nav>
+        <a href="https://subastas.boe.es/index.php"><span>Inicio</span></a>
+        <a href="https://subastas.boe.es/subastas_ava.php"><span>Buscar</span></a>
+        <a href="https://subastas.boe.es/ayuda.php"><span>Ayuda</span></a>
+        <a href="https://subastas.boe.es/acceso.php"><span>Iniciar sesión</span></a>
+      </nav>
+    </div>
+    <div id="contenedor">
+      <div id="contenido">
+        <h2>Subasta SUB-AT-2026-26R0886002107</h2>
+        <div class="caja gris aviso">
+          <p><strong>ADVERTENCIA:</strong> la puja más alta realizada es pública y existe posibilidad de prórroga hasta un máximo de 24 horas.</p>
+        </div>
+        <div id="tabs">
+          <label class="selected" for="dropDownFiltro">Bienes</label>
+          <ul class="navlist">
+            <li>
+              <a href="./detalleSubasta.php?idSub=SUB-AT-2026-26R0886002107&amp;ver=1&amp;idBus=&amp;idLote=&amp;numPagBus=">Información general</a>
+            </li>
+            <li>
+              <a href="./detalleSubasta.php?idSub=SUB-AT-2026-26R0886002107&amp;ver=2&amp;idBus=&amp;idLote=&amp;numPagBus=">Autoridad gestora</a>
+            </li>
+            <li>
+              <a href="./detalleSubasta.php?idSub=SUB-AT-2026-26R0886002107&amp;ver=3&amp;idBus=&amp;idLote=&amp;numPagBus=" class="current">Bienes</a>
+            </li>
+            <li>
+              <a href="./detalleSubasta.php?idSub=SUB-AT-2026-26R0886002107&amp;ver=5&amp;idBus=&amp;idLote=&amp;numPagBus=">Pujas</a>
+            </li>
+          </ul>
+        </div>
+        <div id="idBloqueDatos3">
+          <div>
+            <div class="bloque" id="idBloqueLote1">
+              <div>
+                <div class="caja">BUQUES EMBARCACIÓN TANOKA</div>
+              </div>
+              <div>
+                <h3>Datos del bien subastado</h3>
+                <div>
+                  <h4>Bien 1 - Bien mueble (Buques)</h4>
+                  <table>
+                    <tr>
+                      <th>Descripción</th>
+                      <td>EMBARCACIÓN TANOKA, MATRÍCULA 7ª BA-6-16-97 NIB: 169802, AÑO DE CONSTRUCCIÓN 1997, ESLORA 6,270, ASTILLERO ARIA YATCHS, S.A.</td>
+                    </tr>
+                    <tr>
+                      <th>Referencia Registral</th>
+                      <td>20240009324</td>
+                    </tr>
+                    <tr>
+                      <th>Visitable</th>
+                      <td>No consta</td>
+                    </tr>
+                    <tr>
+                      <th>Cargas</th>
+                      <td>0,00 €</td>
+                    </tr>
+                    <tr>
+                      <th>Inscripción registral</th>
+                      <td>Bien Inscrito en el registro de bienes muebles de GIRONA, Número de bien 20240009324</td>
+                    </tr>
+                    <tr>
+                      <th>Título jurídico</th>
+                      <td>PLENO DOMINIO</td>
+                    </tr>
+                  </table>
+                  <h5>Información complementaria del bien</h5>
+                  <div class="caja gris info">
+                    <p>Para consultar la información complementaria debe <strong>Iniciar sesión</strong> en el Portal de Subastas.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

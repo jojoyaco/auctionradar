@@ -1,0 +1,69 @@
+AuctionRadar Noncommercial License 1.0
+SPDX-License-Identifier: LicenseRef-AuctionRadar-Noncommercial-1.0
+
+Copyright (c) 2026 AuctionRadar contributors.
+
+1. Scope and acceptance
+"Software" means the original AuctionRadar code and other material expressly
+offered under this license. Each contributor licenses only rights they control.
+Exercising rights granted here constitutes acceptance of these conditions.
+Third-party software and data are excluded and retain their own terms.
+
+2. Free noncommercial permission
+Subject to this license, you may use, run, study, copy, modify and distribute
+the Software, including modified versions, solely for noncommercial purposes
+and without charging recipients for the Software or access to it.
+No license fee is payable for these permissions. There is no automatic
+conversion, time limit, or future grant of commercial-use rights.
+
+3. No direct or indirect financial exploitation
+You may not use the Software, a modified version, or its operation or outputs
+for a purpose intended or directed toward commercial advantage, profit,
+revenue, monetary compensation, or another direct or indirect financial return,
+whether for yourself or another person or organization. This restriction
+applies regardless of organizational form, funding source, or tax status.
+
+Prohibited activities include selling or licensing copies; charging for access,
+subscriptions, hosting, APIs or services using the Software; monetizing it
+through advertising, affiliate links, commissions, lead generation, sponsorship
+or Software-linked compensation; paid support, installation or customization;
+commercial bundling; and selling or monetizing its outputs or access to them.
+Using the Software to identify or evaluate auctions, purchases, investments
+or resales with an intention of earning a profit or commercial return is also
+prohibited, even when no fee is charged for the Software itself.
+
+Personal study, experimentation, teaching, recreation and obtaining goods for
+personal use are permitted only when they meet these noncommercial conditions.
+There is no blanket exception for charities, educational bodies, governments,
+research organizations, small businesses, or internal business use.
+
+4. Redistribution and modifications
+Redistribution must be free of charge and for permitted noncommercial purposes.
+Provide this license and preserve applicable copyright and attribution notices.
+Identify modifications and provide the corresponding preferred source code for
+any modified Software you distribute. License your modifications to the
+Software under these same terms. Do not remove these restrictions, relicense
+the Software under more permissive terms, or impose a fee for recipients to
+exercise the permissions granted here. This does not change the independent
+licenses of third-party components or claim ownership of third-party data.
+
+5. Reserved rights and duration
+No commercial permission, trademark permission, or rights not expressly
+granted here are provided. No statement that the Software is "free" grants
+commercial rights. The permissions for this version continue without a fee
+while you comply; this license contains no provision for a paid commercial
+exception. Nothing here limits rights that mandatory applicable law grants
+independently of this license. These terms do not purport to bind future works
+that a copyright holder has not offered under this license.
+
+6. Termination
+Your permissions terminate if you violate these conditions. Cease unauthorized
+use and distribution. Termination does not require compliant recipients to
+give up permissions they independently hold under this license.
+
+7. No warranty or liability
+TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, THE SOFTWARE IS PROVIDED
+"AS IS", WITHOUT WARRANTIES OF ANY KIND, INCLUDING MERCHANTABILITY, FITNESS
+FOR A PARTICULAR PURPOSE, ACCURACY, AVAILABILITY OR NON-INFRINGEMENT. THE
+LICENSORS ARE NOT LIABLE FOR CLAIMS, DAMAGES OR OTHER LIABILITY ARISING FROM
+THE SOFTWARE OR ITS USE. THE SOFTWARE PROVIDES NO LEGAL OR INVESTMENT ADVICE.

@@ -1,0 +1,36 @@
+<!--
+  Fixture sanitizado: pestaña "Bienes" con DOS lotes (Bien 1 + Bien 2).
+
+  Caso de borde: la misma subasta contiene varios Bienes. `collect_boe_photos`
+  debe respetar el scope por lote y aceptar SOLO las fotos del bloque del
+  Bien actual (Bien 1 en este caso). El Bien 2 (Vivienda en Asturias) tiene
+  fotos distintas y no debe mezclarse.
+
+  Subasta: SUB-AT-2026-26R0886002107.
+  Bloque Bien 1: Buque TANOKA.
+  Bloque Bien 2: Vivienda en Asturias (otro lote distinto).
+-->
+<!DOCTYPE html>
+<html lang="es">
+  <head><meta charset="utf-8" /><title>Detalle subasta multi-lote</title></head>
+  <body>
+    <div id="idBloqueDatos3">
+      <div class="bloque" id="idBloqueLote1">
+        <div class="caja">BUQUES EMBARCACIÓN TANOKA</div>
+        <h4>Bien 1 - Bien mueble (Buques)</h4>
+        <div class="galeria">
+          <img src="/reg/fotos/SUB-AT-2026-26R0886002107/01.jpg" alt="Bien 1 foto 1">
+          <img src="/reg/fotos/SUB-AT-2026-26R0886002107/02.jpg" alt="Bien 1 foto 2">
+        </div>
+      </div>
+      <div class="bloque" id="idBloqueLote2">
+        <div class="caja">VIVIENDA EN ASTURIAS</div>
+        <h4>Bien 2 - Inmueble (Vivienda)</h4>
+        <div class="galeria">
+          <img src="/reg/fotos/SUB-AT-2026-26R0886002107/vivienda-01.jpg" alt="Bien 2 salón">
+          <img src="/reg/fotos/SUB-AT-2026-26R0886002107/vivienda-02.jpg" alt="Bien 2 cocina">
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,27 @@
+<!--
+  Fixture sanitizado: pestaña "Bienes" con atributos lazy-load (data-src, data-original).
+
+  Caso de borde: las galerías públicas suelen usar carga diferida. El parser
+  BOE debe honrar `data-src`, `data-original` y `data-lazy` además de `src`.
+
+  Subasta: SUB-AT-2026-26R0886002107.
+  Las 3 imágenes se aceptan; los logos `/imagenes/...` se filtran.
+-->
+<!DOCTYPE html>
+<html lang="es">
+  <head><meta charset="utf-8" /><title>Detalle con carga diferida</title></head>
+  <body>
+    <div id="idBloqueDatos3">
+      <div class="bloque" id="idBloqueLote1">
+        <div class="caja">BUQUES EMBARCACIÓN TANOKA</div>
+        <h4>Bien 1 - Bien mueble (Buques)</h4>
+        <div class="galeria">
+          <img data-src="/reg/fotos/SUB-AT-2026-26R0886002107/01.jpg" alt="lazy 1">
+          <img data-original="/reg/fotos/SUB-AT-2026-26R0886002107/02.jpg" alt="lazy 2">
+          <img data-lazy="/reg/fotos/SUB-AT-2026-26R0886002107/03.jpg" alt="lazy 3">
+          <img src="/reg/fotos/SUB-AT-2026-26R0886002107/04.jpg" alt="normal">
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

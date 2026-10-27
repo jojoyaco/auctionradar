@@ -1,0 +1,25 @@
+[Unit]
+Description=AuctionRadar private web application
+After=network.target
+
+[Service]
+Type=simple
+User=auctionradar
+Group=auctionradar
+WorkingDirectory=/opt/auctionradar/app
+EnvironmentFile=/etc/auctionradar/auctionradar.env
+UMask=0077
+ExecStart=/opt/auctionradar/venv/bin/gunicorn --workers 2 --bind 127.0.0.1:8000 --logger-class auctionradar.web.gunicorn_logging.PrivateLogger --error-logfile - 'auctionradar.web:create_app()'
+Restart=on-failure
+RestartSec=5s
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectHome=true
+ProtectSystem=strict
+ReadWritePaths=/var/lib/auctionradar
+PrivateDevices=true
+LockPersonality=true
+RestrictSUIDSGID=true
+
+[Install]
+WantedBy=multi-user.target

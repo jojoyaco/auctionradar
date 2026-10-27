@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#14233a">
+  <meta name="description" content="Vista pública de una oportunidad compartida desde AuctionRadar.">
+  <meta name="robots" content="noindex, nofollow">
+  <title data-i18n="Oportunidad compartida · AuctionRadar">Oportunidad compartida · AuctionRadar</title>
+  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+  <!-- ui.js: synchronous, runs before stylesheet to apply theme + first-pass i18n (no FOUC). -->
+  <script src="/static/ui.js"></script>
+  <link rel="stylesheet" href="/static/app.css">
+</head>
+<body>
+  <a class="skip-link" href="#main-content" data-i18n="Saltar al contenido principal">Saltar al contenido principal</a>
+
+  <div class="share-shell">
+    <header class="share-header">
+      <div class="share-header-brand">
+        <span class="login-brand-mark" aria-hidden="true">R</span>
+        <span>
+          <div class="login-brand-name" data-i18n="AuctionRadar">AuctionRadar</div>
+          <div class="login-brand-sub" data-i18n="Subastas bajo seguimiento">Subastas bajo seguimiento</div>
+        </span>
+      </div>
+      <div class="share-header-meta">
+        <div class="ui-preferences share-preferences" aria-label="Preferencias" data-i18n-attr="aria-label: Preferencias">
+          <label class="ui-preference ui-language-select-wrap">
+            <span class="ui-preference-label" data-i18n="Idioma">Idioma</span>
+            <select class="ui-language-select" data-language-select>
+              <option value="es">Español</option>
+              <option value="en">English</option>
+            </select>
+          </label>
+          <button class="ui-preference ui-theme-toggle" type="button" data-theme-toggle aria-pressed="false" aria-label="Cambiar tema" title="Cambiar tema"><span class="ui-theme-toggle-label" data-theme-label>Claro</span></button>
+        </div>
+        <span data-share-token-label data-i18n="Enlace de solo lectura">Enlace de solo lectura</span>
+      </div>
+    </header>
+
+    <main id="main-content" class="share-card" aria-labelledby="share-title">
+      <h1 id="share-title" data-share-title>Cargando oportunidad…</h1>
+
+      <div class="public-note" role="note" data-i18n="Vista pública. Sólo se muestran los campos publicados del anuncio original; las notas privadas y los datos de revisión no se incluyen.">
+        Vista pública. Sólo se muestran los campos publicados del anuncio original;
+        las notas privadas y los datos de revisión no se incluyen.
+      </div>
+
+      <div data-share-state="loading" class="state" role="status" aria-live="polite">
+        <div class="spinner" aria-hidden="true"></div>
+        <p class="state-title mb-0" data-i18n="Cargando oportunidad compartida…">Cargando oportunidad compartida…</p>
+      </div>
+
+      <div data-share-state="error" class="state state-error" role="alert" hidden>
+        <p class="state-title mb-0" data-share-error-msg data-i18n="No se pudo cargar el enlace.">No se pudo cargar el enlace.</p>
+        <p class="text-small mt-sm" data-i18n="Pide a quien te lo ha enviado un enlace nuevo o revisa que la URL esté completa.">Pide a quien te lo ha enviado un enlace nuevo o revisa que la URL esté completa.</p>
+      </div>
+
+      <section data-share-content hidden>
+        <div class="row-flex" data-share-badges></div>
+
+        <div class="mt-md" data-share-gallery-region>
+          <h3 class="mt-0" data-i18n="Galería">Galería</h3>
+          <div class="gallery" data-share-gallery></div>
+        </div>
+
+        <div class="mt-md">
+          <h3 data-i18n="Datos básicos">Datos básicos</h3>
+          <div class="facts-grid" data-share-facts></div>
+        </div>
+
+        <div class="mt-md" data-share-docs-region hidden>
+          <h3 data-i18n="Documentos">Documentos</h3>
+          <div class="docs-list" data-share-docs></div>
+        </div>
+
+        <div class="mt-md" data-share-source-region hidden>
+          <h3 data-i18n="Fuente original">Fuente original</h3>
+          <p class="text-small text-muted">
+            <span data-i18n="Enlace al anuncio publicado:">Enlace al anuncio publicado:</span>
+            <a data-share-source-link href="#" rel="nofollow noopener" target="_blank" data-i18n="abrir ficha original">abrir ficha original</a>
+          </p>
+        </div>
+
+        <hr class="divider">
+        <p class="text-small text-faint mb-0" data-i18n="Datos publicados por el portal de origen; esta página no constituye recomendación, tasación ni coste total.">
+          Datos publicados por el portal de origen; esta página no constituye recomendación, tasación ni coste total.
+        </p>
+      </section>
+    </main>
+  </div>
+
+  <!-- Lightbox -->
+  <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" data-i18n-attr="aria-label: Imagen ampliada" aria-label="Imagen ampliada" data-lightbox hidden>
+    <button class="lightbox-close" type="button" data-lightbox-close data-i18n-attr="aria-label: Cerrar imagen" aria-label="Cerrar imagen" data-i18n="Cerrar">Cerrar</button>
+    <button class="lightbox-prev" type="button" data-lightbox-prev data-i18n-attr="aria-label: Anterior foto" aria-label="Anterior foto">‹</button>
+    <img class="lightbox-img" alt="" data-lightbox-img>
+    <div class="lightbox-caption" data-lightbox-caption></div>
+    <div class="lightbox-counter" data-lightbox-counter></div>
+    <button class="lightbox-next" type="button" data-lightbox-next data-i18n-attr="aria-label: Siguiente foto" aria-label="Siguiente foto">›</button>
+    <div class="lightbox-shortcut" data-lightbox-shortcut>← → · Esc</div>
+  </div>
+
+  <script src="/static/share.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,631 @@
+{% set private_workspace = config['WEBAPP_CONFIG'].WORKSPACE_MODE|default('legacy') == 'private' %}
+{% set personal_sources = private_workspace and user.id != config['WEBAPP_CONFIG'].LEGACY_OWNER_USER_ID %}
+<!DOCTYPE html>
+<html lang="es" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#14233a">
+  <meta name="description" content="Dashboard de subastas para AuctionRadar.">
+  <meta name="robots" content="noindex, nofollow">
+  <title data-i18n="AuctionRadar">AuctionRadar</title>
+  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+  <meta name="csrf-token" content="{{ csrf_token()|e }}">
+  <meta name="user-admin" content="{% if user.is_admin %}true{% else %}false{% endif %}">
+  <meta name="user-id" content="{{ user.id|e }}">
+  <meta name="workspace-private" content="{{ 'true' if private_workspace else 'false' }}">
+  <meta name="app-brand" content="AuctionRadar">
+  <meta name="app-subtitle" content="Subastas bajo seguimiento">
+  <!-- ui.js: synchronous, runs before stylesheet to apply theme + first-pass i18n (no FOUC). -->
+  <script src="/static/ui.js"></script>
+  <link rel="stylesheet" href="/static/app.css">
+</head>
+<body>
+  <a class="skip-link" href="#main-content" data-i18n="Saltar al contenido principal">Saltar al contenido principal</a>
+
+  <div class="app-shell">
+    <aside class="sidebar" id="app-sidebar" data-i18n-attr="aria-label: Navegación principal" aria-label="Navegación principal">
+      <div class="sidebar-brand">
+        <span class="sidebar-brand-mark" aria-hidden="true">R</span>
+        <span>
+          <div class="sidebar-brand-name" data-i18n="AuctionRadar">AuctionRadar</div>
+          <div class="sidebar-brand-sub" data-i18n="Subastas bajo seguimiento">Subastas bajo seguimiento</div>
+        </span>
+      </div>
+
+      <nav data-i18n-attr="aria-label: Secciones" aria-label="Secciones">
+        <div class="sidebar-section" data-i18n="General">General</div>
+        <a class="nav-item" href="#oportunidades" data-nav="oportunidades">
+          <span class="nav-item-icon" aria-hidden="true">◆</span>
+          <span data-i18n="Oportunidades">Oportunidades</span>
+        </a>
+        <a class="nav-item" href="#suscripciones" data-nav="suscripciones">
+          <span class="nav-item-icon" aria-hidden="true">★</span>
+          <span data-i18n="Mis búsquedas">Mis búsquedas</span>
+          <span class="nav-item-badge" data-nav-badge="suscripciones" hidden aria-hidden="true">0</span>
+        </a>
+        <a class="nav-item" href="#busquedas" data-nav="busquedas">
+          <span class="nav-item-icon" aria-hidden="true">↻</span>
+          <span data-i18n="Búsquedas">Búsquedas</span>
+        </a>
+
+        {% if private_workspace %}
+        <div class="sidebar-section" data-i18n="Mi espacio">Mi espacio</div>
+        {% if personal_sources %}<a class="nav-item" href="/connections">
+          <span class="nav-item-icon" aria-hidden="true">⊕</span>
+          <span data-i18n="Fuentes y accesos">Fuentes y accesos</span>
+        </a>{% endif %}
+        {% else %}
+        <div class="sidebar-section" data-admin-only data-i18n="Administración" hidden>Administración</div>
+        {% endif %}
+        <a class="nav-item" href="#configuracion" data-nav="configuracion" data-workspace-manager-only hidden>
+          <span class="nav-item-icon" aria-hidden="true">⚙</span>
+          <span data-i18n="Configuración">Configuración</span>
+        </a>
+        <a class="nav-item" href="#usuarios" data-nav="usuarios" data-admin-only hidden>
+          <span class="nav-item-icon" aria-hidden="true">◔</span>
+          <span data-i18n="Usuarios">Usuarios</span>
+        </a>
+
+        <div class="sidebar-section" data-i18n="Sesión">Sesión</div>
+        <a class="nav-item" href="#cuenta" data-nav="cuenta">
+          <span class="nav-item-icon" aria-hidden="true">●</span>
+          <span data-i18n="Cuenta">Cuenta</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-user">
+        <div class="sidebar-user-name" data-user-name>{{ user.username|e }}</div>
+        <div class="sidebar-user-role" data-user-role>{% if user.is_admin %}Administrador{% else %}Usuario{% endif %}</div>
+        <div class="sidebar-user-actions">
+          <button type="button" class="btn" data-action="logout" data-i18n="Cerrar sesión">Cerrar sesión</button>
+        </div>
+      </div>
+    </aside>
+
+    <div class="main">
+      <header class="topbar">
+        <button class="menu-toggle" type="button" aria-controls="app-sidebar" aria-expanded="false" data-menu-toggle>
+          <span aria-hidden="true">☰</span>
+          <span data-i18n="Menú">Menú</span>
+        </button>
+        <h1 class="topbar-title" data-topbar-title>Oportunidades</h1>
+        <div class="topbar-lastupdated" data-lastupdated-wrap hidden>
+          <span class="text-small text-muted" data-i18n="Última actualización:">Última actualización:</span>
+          <strong data-lastupdated-label>—</strong>
+        </div>
+        <div class="topbar-actions ui-preferences">
+          <label class="ui-preference ui-language-select-wrap" aria-label="Idioma" data-i18n-attr="aria-label: Idioma">
+            <span class="ui-preference-label" data-i18n="Idioma">Idioma</span>
+            <select class="ui-language-select" data-language-select>
+              <option value="es">Español</option>
+              <option value="en">English</option>
+            </select>
+          </label>
+          <button class="ui-preference ui-theme-toggle" type="button" data-theme-toggle aria-pressed="false" aria-label="Cambiar tema" title="Cambiar tema">
+            <span class="ui-theme-toggle-label" data-theme-label>Claro</span>
+          </button>
+          <button class="ui-preference keyboard-help-trigger" type="button" data-shortcuts-trigger aria-label="Atajos de teclado" title="Atajos de teclado" data-i18n-attr="aria-label: Atajos de teclado; title: Atajos de teclado">?</button>
+        </div>
+      </header>
+
+      <main class="content" id="main-content">
+        <!-- Vista: Oportunidades -->
+        <section class="page-section" data-view="oportunidades" aria-labelledby="oportunidades-title">
+          <div class="section-head">
+            <div>
+              <h2 id="oportunidades-title" data-i18n="Oportunidades">Oportunidades</h2>
+              {% if private_workspace %}
+              <p class="section-sub" data-i18n="Tus subastas, decisiones y notas. Solo se comparte lo que tú elijas mediante un enlace.">Tus subastas, decisiones y notas. Solo se comparte lo que tú elijas mediante un enlace.</p>
+              {% if personal_sources %}<p class="text-small text-muted"><a href="/connections" data-i18n="Configura tus fuentes para empezar">Configura tus fuentes para empezar</a></p>{% endif %}
+              {% else %}
+              <p class="section-sub" data-i18n="Filtra por tipo de activo, decisión del equipo o cambios desde la última revisión.">Filtra por tipo de activo, decisión del equipo o cambios desde la última revisión.</p>
+              {% endif %}
+            </div>
+          </div>
+
+          <div class="toolbar toolbar-v2" role="search" aria-label="Filtros de oportunidades" data-i18n-attr="aria-label: Filtros de oportunidades">
+            <!-- MAIN ROW: search + quick actions (chips, sort, filters). -->
+            <div class="toolbar-row toolbar-row-main">
+              <div class="toolbar-field toolbar-field-search">
+                <label for="filter-q" class="sr-only" data-i18n="Buscar">Buscar</label>
+                <span class="search-input-wrap">
+                  <svg class="icon-svg" aria-hidden="true" viewBox="0 0 16 16" focusable="false"><path d="M7 2a5 5 0 1 1 0 10A5 5 0 0 1 7 2zm0 1.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7zm5.03 8.03l2.6 2.6-1.06 1.06-2.6-2.6 1.06-1.06z" fill="currentColor"/></svg>
+                  <input id="filter-q" class="input" type="search" placeholder="Título, ID, ubicación…" data-i18n-attr="placeholder: Título, ID, ubicación…" data-filter="q" autocomplete="off" spellcheck="false">
+                </span>
+              </div>
+
+              <button type="button" class="btn-icon" data-popover-trigger="saved-search" data-saved-search-trigger aria-haspopup="dialog" aria-expanded="false">
+                <svg class="icon-svg" aria-hidden="true" viewBox="0 0 16 16" focusable="false"><path d="M3 2.5A1.5 1.5 0 0 1 4.5 1h7A1.5 1.5 0 0 1 13 2.5v11a1.5 1.5 0 0 1-1.5 1.5h-7A1.5 1.5 0 0 1 3 13.5v-11zm1.5 0v11h7v-11h-2v2H7v-2H4.5zM7 4h2v2H7V4z" fill="currentColor"/></svg>
+                <span class="btn-icon-label" data-saved-search-label data-i18n="Búsqueda guardada">Búsqueda guardada</span>
+              </button>
+
+              <button type="button" class="btn-icon" data-popover-trigger="sort" data-sort-trigger aria-haspopup="dialog" aria-expanded="false">
+                <svg class="icon-svg" aria-hidden="true" viewBox="0 0 16 16" focusable="false"><path d="M3 4h10v1.5H3V4zm1.5 3.25h7v1.5h-7v-1.5zM6 10.5h4V12H6v-1.5z" fill="currentColor"/></svg>
+                <span class="btn-icon-label" data-sort-label data-i18n="Ordenar por">Ordenar por</span>
+              </button>
+
+              <button type="button" class="btn-icon" data-popover-trigger="filters" data-filters-trigger aria-haspopup="dialog" aria-expanded="false">
+                <svg class="icon-svg" aria-hidden="true" viewBox="0 0 16 16" focusable="false"><path d="M2 3h12l-4.5 6v4l-3 1.5V9L2 3z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>
+                <span class="btn-icon-label" data-i18n="Más filtros">Más filtros</span>
+                <span class="btn-badge" data-active-filter-count hidden>0</span>
+              </button>
+
+              <div class="toolbar-actions">
+                <button class="btn btn-ghost btn-icon-only" type="button" data-action="reset-filters" aria-label="Limpiar filtros" data-i18n-attr="aria-label: Limpiar filtros" title="Limpiar filtros">
+                  <svg class="icon-svg" aria-hidden="true" viewBox="0 0 16 16" focusable="false"><path d="M3 3l10 10-1 1L2 4l1-1zm10 0L3 13l1 1 10-10-1-1z" fill="currentColor"/></svg>
+                </button>
+                <button class="btn btn-primary btn-icon-only" type="button" data-action="refresh" aria-label="Actualizar" data-i18n-attr="aria-label: Actualizar" title="Actualizar">
+                  <svg class="icon-svg" aria-hidden="true" viewBox="0 0 16 16" focusable="false"><path d="M8 2.5a5.5 5.5 0 0 1 5.43 4.7l-1.48.2A4 4 0 1 0 12 8h2.5L11 11.5 7.5 8H10a2 2 0 0 0-2-2 2 2 0 0 0-1.85 1.23L4.7 6.42A3.5 3.5 0 0 1 8 4z" fill="currentColor"/></svg>
+                </button>
+              </div>
+            </div>
+
+            <!-- STATUS + AI ROW: segmented control + verdict (when applicable). -->
+            <div class="toolbar-row toolbar-status-row">
+              <div class="toolbar-field toolbar-field-status" role="group" aria-label="Estado de revisión" data-i18n-attr="aria-label: Estado de revisión" data-filter="status">
+                <div class="toggle-group">
+                  <button class="toggle-btn" type="button" data-status-value="all" aria-pressed="false" data-i18n="Todos">Todos</button>
+                  <button class="toggle-btn" type="button" data-status-value="pending" aria-pressed="true" data-i18n="Pendientes">Pendientes</button>
+                  <button class="toggle-btn" type="button" data-status-value="ok" aria-pressed="false" data-i18n="OK">OK</button>
+                  <button class="toggle-btn" type="button" data-status-value="ko" aria-pressed="false" data-i18n="KO">KO</button>
+                </div>
+              </div>
+
+              <div class="toolbar-field toolbar-field-ai" hidden data-ai-toolbar>
+                <button type="button" class="btn-icon" data-popover-trigger="ai" data-ai-trigger aria-haspopup="dialog" aria-expanded="false">
+                  <svg class="icon-svg" aria-hidden="true" viewBox="0 0 16 16" focusable="false"><path d="M8 1.5l1.85 4.4 4.65.4-3.5 3.05 1 4.55L8 11.7 3.99 13.9l1-4.55L1.5 6.3l4.65-.4L8 1.5z" fill="currentColor"/></svg>
+                  <span class="btn-icon-label" data-ai-label data-i18n="Veredicto IA">Veredicto IA</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- CATEGORY ROW: primary chips + "More categories" button for the rest. -->
+            <div class="toolbar-row toolbar-row-secondary">
+              <div class="chip-group" role="group" aria-label="Categoría" data-i18n-attr="aria-label: Categoría" data-category-chips>
+                <button type="button" class="chip-btn" data-category-chip="" aria-pressed="true" data-i18n="Todas">Todas</button>
+                <button type="button" class="chip-btn" data-category-chip="housing" aria-pressed="false" data-i18n="Viviendas">Viviendas</button>
+                <button type="button" class="chip-btn" data-category-chip="vehicles" aria-pressed="false" data-i18n="Vehículos">Vehículos</button>
+                <button type="button" class="chip-btn" data-category-chip="boats" aria-pressed="false" data-i18n="Barcos">Barcos</button>
+                <button type="button" class="chip-btn" data-category-chip="machinery" aria-pressed="false" data-i18n="Maquinaria">Maquinaria</button>
+                <button type="button" class="btn-icon" data-popover-trigger="more-categories" data-more-categories-trigger aria-haspopup="dialog" aria-expanded="false">
+                  <span class="btn-icon-label" data-i18n="Más categorías">Más categorías</span>
+                  <svg class="icon-svg" aria-hidden="true" viewBox="0 0 16 16" focusable="false"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </button>
+              </div>
+            </div>
+
+            <!-- FILA FILTROS ACTIVOS: chips removibles con criterios colapsados. -->
+            <div class="active-filters" data-active-filters hidden aria-live="polite">
+              <span class="active-filters-label" data-i18n="Filtros activos">Filtros activos</span>
+              <span data-active-filters-list></span>
+            </div>
+
+            <!-- ADVANCED PANEL: shown when "More filters" is clicked. Preserve the
+                 <details><summary>...</summary> contract so tests and readers can find it. -->
+            <details class="toolbar-advanced" data-advanced-filters hidden>
+              <summary data-i18n="Más filtros">Más filtros</summary>
+              <div class="toolbar-advanced-fields">
+                <div class="toolbar-field">
+                  <label for="filter-asset" data-i18n="Familia de activo">Familia de activo</label>
+                  <select id="filter-asset" class="select" data-filter="asset">
+                    <option value="all" selected data-i18n="Todas las familias">Todas las familias</option>
+                    <option value="housing" data-i18n="Vivienda">Vivienda</option>
+                    <option value="vehicles" data-i18n="Vehículos">Vehículos</option>
+                    <option value="commercial" data-i18n="Local comercial">Local comercial</option>
+                    <option value="land" data-i18n="Terreno">Terreno</option>
+                    <option value="boats" data-i18n="Embarcaciones">Embarcaciones</option>
+                    <option value="machinery" data-i18n="Maquinaria">Maquinaria</option>
+                    <option value="electronics" data-i18n="Electrónica">Electrónica</option>
+                    <option value="furniture" data-i18n="Mobiliario">Mobiliario</option>
+                    <option value="collectibles" data-i18n="Objetos de colección">Objetos de colección</option>
+                    <option value="other" data-i18n="Otros">Otros</option>
+                    <option value="unknown" data-i18n="Sin clasificar">Sin clasificar</option>
+                  </select>
+                </div>
+                <div class="toolbar-field">
+                  <label for="filter-source" data-i18n="Fuente">Fuente</label>
+                  <select id="filter-source" class="select" data-filter="source">
+                    <option value="" data-i18n="Todas las fuentes">Todas las fuentes</option>
+                  </select>
+                </div>
+                <div class="toolbar-field">
+                  <label for="filter-location" data-i18n="Ubicación">Ubicación</label>
+                  <input id="filter-location" class="input" type="search" data-filter="location" autocomplete="off" spellcheck="false" placeholder="Ciudad, provincia…" data-i18n-attr="placeholder: Ciudad, provincia…">
+                </div>
+                <div class="toolbar-field">
+                  <label for="filter-price-min" data-i18n="Importe mínimo (EUR)">Importe mínimo (EUR)</label>
+                  <input id="filter-price-min" class="input" type="number" min="0" step="100" inputmode="decimal" data-filter="price_min">
+                </div>
+                <div class="toolbar-field">
+                  <label for="filter-price-max" data-i18n="Importe máximo (EUR)">Importe máximo (EUR)</label>
+                  <input id="filter-price-max" class="input" type="number" min="0" step="100" inputmode="decimal" data-filter="price_max">
+                </div>
+                <div class="toolbar-field toolbar-field-checkbox">
+                  <label class="checkbox-row" for="filter-photos">
+                    <input id="filter-photos" type="checkbox" data-filter="has_photos">
+                    <span data-i18n="Con fotos">Con fotos</span>
+                  </label>
+                </div>
+                <div class="toolbar-field toolbar-field-checkbox">
+                  <label class="checkbox-row" for="filter-changed">
+                    <input id="filter-changed" type="checkbox" data-filter="changed">
+                    <span data-i18n="Con cambios desde revisión">Con cambios desde revisión</span>
+                  </label>
+                </div>
+              </div>
+            </details>
+
+            <!-- Hidden data-binding controls: chips/popovers delegate to these to
+                 preserve the filter contract and enable event-driven reloads. -->
+            <div class="sv-only" aria-hidden="true">
+              <select id="filter-search" data-filter="search_id" data-search-id-select aria-label="Búsqueda guardada" data-i18n-attr="aria-label: Búsqueda guardada">
+                <option value="" data-i18n="Todas las búsquedas">Todas las búsquedas</option>
+              </select>
+              <select id="filter-category" data-filter="category" aria-label="Categoría" data-i18n-attr="aria-label: Categoría">
+                <option value="" data-i18n="Todas las categorías">Todas las categorías</option>
+              </select>
+              <select id="filter-sort" data-filter="sort" aria-label="Ordenar por" data-i18n-attr="aria-label: Ordenar por">
+                <option value="updated" selected data-i18n="Actualizadas recientemente">Actualizadas recientemente</option>
+                <option value="newest" data-i18n="Más nuevas">Más nuevas</option>
+                <option value="oldest" data-i18n="Más antiguas">Más antiguas</option>
+                <option value="price_asc" data-i18n="Precio: menor a mayor">Precio: menor a mayor</option>
+                <option value="price_desc" data-i18n="Precio: mayor a menor">Precio: mayor a menor</option>
+                <option value="ai_score" data-i18n="Puntuación IA">Puntuación IA</option>
+              </select>
+              <select id="filter-ai" data-filter="ai" aria-label="Veredicto IA" data-i18n-attr="aria-label: Veredicto IA">
+                <option value="shortlist" selected data-i18n="Recomendadas y pendientes">Recomendadas y pendientes</option>
+                <option value="all" data-i18n="Todos los veredictos">Todos los veredictos</option>
+                <option value="keep" data-i18n="Recomendadas">Recomendadas</option>
+                <option value="needs_review" data-i18n="Para revisar">Para revisar</option>
+                <option value="reject" data-i18n="Descartadas">Descartadas</option>
+              </select>
+            </div>
+
+            <!-- POPOVERS: one for each [data-popover-trigger]. -->
+            <div class="popover" data-popover="saved-search" role="dialog" aria-label="Búsqueda guardada" data-i18n-attr="aria-label: Búsqueda guardada" hidden></div>
+            <div class="popover" data-popover="sort" role="dialog" aria-label="Ordenar por" data-i18n-attr="aria-label: Ordenar por" hidden></div>
+            <div class="popover" data-popover="ai" role="dialog" aria-label="Veredicto IA" data-i18n-attr="aria-label: Veredicto IA" hidden></div>
+            <div class="popover" data-popover="more-categories" role="dialog" aria-label="Más categorías" data-i18n-attr="aria-label: Más categorías" hidden></div>
+          </div>
+
+          <div class="row-flex text-small text-muted" data-counts-row aria-live="polite">
+            <span data-count-pending data-i18n="Pendientes: —">Pendientes: —</span>
+            <span aria-hidden="true">·</span>
+            <span data-count-ok data-i18n="OK: —">OK: —</span>
+            <span aria-hidden="true">·</span>
+            <span data-count-ko data-i18n="KO: —">KO: —</span>
+            <span aria-hidden="true">·</span>
+            <span data-last-run data-i18n="Último recorrido: —">Último recorrido: —</span>
+          </div>
+
+          <div class="mt-md" data-list-region>
+            <div class="state" data-state="loading" role="status" aria-live="polite">
+              <div class="spinner" aria-hidden="true"></div>
+              <p class="state-title mb-0" data-i18n="Cargando oportunidades…">Cargando oportunidades…</p>
+            </div>
+          </div>
+
+          <div class="pagination feed-pagination" data-pagination hidden>
+            <span data-page-info role="status" aria-live="polite">—</span>
+            <button class="btn btn-ghost" type="button" data-load-more data-i18n="Cargar más">Cargar más</button>
+          </div>
+          <div data-feed-sentinel aria-hidden="true"></div>
+        </section>
+
+        <!-- View: Searches (run history) -->
+        <section class="page-section" data-view="busquedas" aria-labelledby="busquedas-title" hidden>
+          <div class="section-head">
+            <div>
+              <h2 id="busquedas-title" data-i18n="Búsquedas">Búsquedas</h2>
+              <p class="section-sub" data-i18n="Historial de recorridos y cola de ejecuciones. Lanza una nueva búsqueda para refrescar los datos.">Historial de recorridos y cola de ejecuciones. Lanza una nueva búsqueda para refrescar los datos.</p>
+            </div>
+            <div>
+              <button class="btn btn-primary" type="button" data-action="queue-run" data-workspace-manager-only hidden data-i18n="Lanzar búsqueda">Lanzar búsqueda</button>
+            </div>
+          </div>
+
+          <div class="state" data-runs-state="loading" role="status" aria-live="polite" hidden>
+            <div class="spinner" aria-hidden="true"></div>
+            <p class="state-title mb-0" data-i18n="Cargando historial…">Cargando historial…</p>
+          </div>
+
+          <div class="state state-error" data-runs-state="error" role="alert" hidden>
+            <p class="state-title mb-0" data-runs-error-msg data-i18n="No se pudo cargar el historial.">No se pudo cargar el historial.</p>
+          </div>
+
+          <div class="runs-list" data-runs-list aria-live="polite"></div>
+        </section>
+
+        <!-- View: Settings (admin) -->
+        <section class="page-section" data-view="configuracion" aria-labelledby="configuracion-title" data-workspace-manager-only hidden>
+          <div class="section-head">
+            <div>
+              <h2 id="configuracion-title" data-i18n="Configuración">Configuración</h2>
+              <p class="section-sub" data-i18n="Presupuestos, regiones preferidas, fuentes y límites de ejecución.">Presupuestos, regiones preferidas, fuentes y límites de ejecución.</p>
+            </div>
+          </div>
+
+          <div class="state" data-settings-state="loading" role="status" aria-live="polite">
+            <div class="spinner" aria-hidden="true"></div>
+            <p class="state-title mb-0" data-i18n="Cargando configuración…">Cargando configuración…</p>
+          </div>
+
+          <div class="state state-error" data-settings-state="error" role="alert" hidden>
+            <p class="state-title mb-0" data-settings-error-msg data-i18n="No se pudo cargar la configuración.">No se pudo cargar la configuración.</p>
+          </div>
+
+          <form class="settings-form" data-settings-form hidden>
+            <div class="settings-grid">
+              <fieldset class="settings-card">
+                <legend data-i18n="Búsqueda automática">Búsqueda automática</legend>
+                <p class="text-small text-faint mt-0" data-i18n="La programación de la búsqueda automática es global y solo puede modificarse desde la configuración del servidor.">La programación de la búsqueda automática es global y solo puede modificarse desde la configuración del servidor.</p>
+                <div class="field">
+                  <label class="field-label" data-i18n="Horario">Horario</label>
+                  <div class="row-flex row-flex-end" data-schedule-static>
+                    <span class="chip" data-schedule-static-label>—</span>
+                  </div>
+                </div>
+                <p class="text-small text-faint mt-sm" data-i18n="El horario no es editable aquí. La próxima búsqueda usa la última configuración guardada.">El horario no es editable aquí. La próxima búsqueda usa la última configuración guardada.</p>
+              </fieldset>
+
+              <fieldset class="settings-card">
+                <legend data-i18n="Vivienda">Vivienda</legend>
+                <div class="field">
+                  <label class="field-label" for="set-housing-budget" data-i18n="Presupuesto total (EUR)">Presupuesto total (EUR)</label>
+                  <input class="input" id="set-housing-budget" type="number" min="0" step="100" inputmode="numeric" data-field="housing_budget">
+                  <p class="text-small text-faint mt-sm" data-i18n="Incluye precio, impuestos, gastos, reforma y financiación si aplica. Déjalo en blanco para no aplicar.">Incluye precio, impuestos, gastos, reforma y financiación si aplica. Déjalo en blanco para no aplicar.</p>
+                </div>
+                <div class="field">
+                  <label class="field-label" data-i18n="Regiones preferidas">Regiones preferidas</label>
+                  <div class="regions-list" data-regions-preferred aria-label="Regiones preferidas" data-i18n-attr="aria-label: Regiones preferidas"></div>
+                </div>
+                <div class="field">
+                  <label class="field-label" for="set-regions-strict" data-i18n="Regiones estrictas (opcional)">Regiones estrictas (opcional)</label>
+                  <select id="set-regions-strict" class="select" multiple size="4" data-field="regions" aria-describedby="set-regions-strict-help">
+                  </select>
+                  <p class="text-small text-faint mt-sm" id="set-regions-strict-help" data-i18n="La próxima búsqueda solo incorporará ubicaciones confirmadas en esas regiones. Las desconocidas quedan fuera; el historial previo se conserva.">La próxima búsqueda solo incorporará ubicaciones confirmadas en esas regiones. Las desconocidas quedan fuera; el historial previo se conserva.</p>
+                </div>
+              </fieldset>
+
+              <fieldset class="settings-card">
+                <legend data-i18n="Vehículos">Vehículos</legend>
+                <div class="field">
+                  <label class="field-label" for="set-vehicle-budget" data-i18n="Presupuesto (EUR)">Presupuesto (EUR)</label>
+                  <input class="input" id="set-vehicle-budget" type="number" min="0" step="100" inputmode="numeric" data-field="vehicle_budget">
+                </div>
+                <div class="field">
+                  <label class="field-label" for="set-vehicle-mileage" data-i18n="Kilometraje máximo">Kilometraje máximo</label>
+                  <input class="input" id="set-vehicle-mileage" type="number" min="0" step="1000" inputmode="numeric" data-field="vehicle_max_mileage">
+                </div>
+              </fieldset>
+
+              <fieldset class="settings-card">
+                <legend data-i18n="Fuentes">Fuentes</legend>
+                <div class="field">
+                  <label class="field-label" data-i18n="Fuentes activas">Fuentes activas</label>
+                  <label for="settings-source-search" class="sr-only" data-i18n="Buscar fuente">Buscar fuente</label>
+                  <input id="settings-source-search" class="input mb-md" type="search" data-settings-source-search placeholder="Buscar fuente…" data-i18n-attr="placeholder: Buscar fuente…">
+                  <div class="sources-list" data-sources-list aria-label="Fuentes a consultar" data-i18n-attr="aria-label: Fuentes a consultar"></div>
+                </div>
+              </fieldset>
+
+              <fieldset class="settings-card">
+                <legend data-i18n="IA">IA</legend>
+                <p class="text-small text-faint mt-0" data-i18n="La configuración del proveedor y del modelo solo se modifica desde el servidor. Aquí se muestra el estado actual.">La configuración del proveedor y del modelo solo se modifica desde el servidor. Aquí se muestra el estado actual.</p>
+                <div class="field">
+                  <label class="field-label" data-i18n="Estado">Estado</label>
+                  <div class="row-flex row-flex-end" data-ai-status-static>
+                    <span class="chip" data-ai-status-chip>—</span>
+                  </div>
+                  <p class="text-small text-faint mt-sm" data-ai-provider-line>—</p>
+                </div>
+                <div class="field">
+                  <label class="field-label" data-i18n="Indicaciones por búsqueda">Indicaciones por búsqueda</label>
+                  <p class="text-small text-faint mt-0" data-i18n="Edita el prompt y los criterios específicos desde Mis búsquedas.">Edita el prompt y los criterios específicos desde Mis búsquedas.</p>
+                  <a class="btn btn-ghost" href="#suscripciones" data-link-searches data-i18n="Abrir Mis búsquedas">Abrir Mis búsquedas</a>
+                </div>
+              </fieldset>
+
+              <details class="settings-card settings-advanced">
+                <summary data-i18n="Avanzado">Avanzado</summary>
+                <p class="text-small text-faint" data-i18n="Límites técnicos de la ejecución. Solo cámbialos si entiendes el efecto en el rendimiento.">Límites técnicos de la ejecución. Solo cámbialos si entiendes el efecto en el rendimiento.</p>
+                <div class="field">
+                  <label class="field-label" for="set-timeout" data-i18n="Timeout (s)">Timeout (s)</label>
+                  <input class="input" id="set-timeout" type="number" min="1" step="1" inputmode="numeric" data-field="timeout">
+                </div>
+                <div class="field">
+                  <label class="field-label" for="set-max-pages" data-i18n="Páginas máx. por fuente">Páginas máx. por fuente</label>
+                  <input class="input" id="set-max-pages" type="number" min="1" step="1" inputmode="numeric" data-field="max_pages">
+                </div>
+                <div class="field">
+                  <label class="field-label" for="set-max-details" data-i18n="Fichas máx. por fuente">Fichas máx. por fuente</label>
+                  <input class="input" id="set-max-details" type="number" min="1" step="1" inputmode="numeric" data-field="max_details">
+                </div>
+                <div class="field">
+                  <label class="field-label" for="set-max-documents" data-i18n="Documentos máx. por ficha">Documentos máx. por ficha</label>
+                  <input class="input" id="set-max-documents" type="number" min="0" step="1" inputmode="numeric" data-field="max_documents">
+                </div>
+                <div class="field">
+                  <label class="field-label" for="set-workers" data-i18n="Concurrencia (workers)">Concurrencia (workers)</label>
+                  <input class="input" id="set-workers" type="number" min="1" max="32" step="1" inputmode="numeric" data-field="workers">
+                </div>
+                <div class="field">
+                  <label class="field-label" for="set-max-run-seconds" data-i18n="Duración máxima del recorrido (s)">Duración máxima del recorrido (s)</label>
+                  <input class="input" id="set-max-run-seconds" type="number" min="60" max="3600" step="30" inputmode="numeric" data-field="max_run_seconds">
+                </div>
+              </details>
+            </div>
+
+            <div class="save-row">
+              <button class="btn btn-primary" type="submit" data-i18n="Guardar cambios">Guardar cambios</button>
+              <span class="save-feedback" data-save-feedback aria-live="polite"></span>
+            </div>
+          </form>
+        </section>
+
+        <!-- Vista: Usuarios (admin) -->
+        <section class="page-section" data-view="usuarios" aria-labelledby="usuarios-title" data-admin-only hidden>
+          <div class="section-head">
+            <div>
+              <h2 id="usuarios-title" data-i18n="Usuarios">Usuarios</h2>
+              {% if private_workspace %}
+              <p class="section-sub" data-i18n="Administra las cuentas de la instancia. Cada usuario mantiene su espacio privado.">Administra las cuentas de la instancia. Cada usuario mantiene su espacio privado.</p>
+              {% else %}
+              <p class="section-sub" data-i18n="Crea cuentas para los revisores y desactiva cuentas que ya no necesites. No hay registro público.">Crea cuentas para los revisores y desactiva cuentas que ya no necesites. No hay registro público.</p>
+              {% endif %}
+            </div>
+          </div>
+
+          <div class="card mb-md" data-users-new>
+            <h3 class="mb-0" data-i18n="Crear usuario">Crear usuario</h3>
+            <form data-form-new-user>
+              <div class="row-flex row-flex-end mt-md">
+                <div class="field field-half field-no-mb">
+                  <label class="field-label" for="new-user-username" data-i18n="Usuario">Usuario</label>
+                  <input class="input" id="new-user-username" type="text" required minlength="2" autocomplete="off" data-new-username>
+                </div>
+                <div class="field field-half field-no-mb">
+                  <label class="field-label" for="new-user-password" data-i18n="Contraseña (mínimo 12)">Contraseña (mínimo 12)</label>
+                  <input class="input" id="new-user-password" type="password" required minlength="12" autocomplete="new-password" data-new-password>
+                </div>
+                <button class="btn btn-primary" type="submit" data-i18n="Crear">Crear</button>
+              </div>
+              <div class="alert alert-error mt-sm" data-new-user-error role="alert" hidden></div>
+            </form>
+          </div>
+
+          <div class="state" data-users-state="loading" role="status" aria-live="polite">
+            <div class="spinner" aria-hidden="true"></div>
+            <p class="state-title mb-0" data-i18n="Cargando usuarios…">Cargando usuarios…</p>
+          </div>
+          <div class="state state-error" data-users-state="error" role="alert" hidden>
+            <p class="state-title mb-0" data-users-error-msg data-i18n="No se pudo cargar la lista.">No se pudo cargar la lista.</p>
+          </div>
+          <div class="users-list" data-users-list aria-live="polite"></div>
+        </section>
+
+        <!-- View: My searches (subscriptions) -->
+        <section class="page-section" data-view="suscripciones" aria-labelledby="suscripciones-title" hidden>
+          <div class="section-head">
+            <div>
+              <h2 id="suscripciones-title" data-i18n="Mis búsquedas">Mis búsquedas</h2>
+              <p class="section-sub" data-i18n="Define búsquedas guardadas con criterios, avisos y, opcionalmente, un prompt de IA por búsqueda.">Define búsquedas guardadas con criterios, avisos y, opcionalmente, un prompt de IA por búsqueda.</p>
+            </div>
+            <button class="btn btn-primary" type="button" data-action="new-saved-search" data-i18n="Nueva búsqueda">Nueva búsqueda</button>
+          </div>
+          <div class="row-flex mb-md" data-search-presets></div>
+
+          <div class="state" data-searches-state="loading" role="status" aria-live="polite">
+            <div class="spinner" aria-hidden="true"></div>
+            <p class="state-title mb-0" data-i18n="Cargando búsquedas guardadas…">Cargando búsquedas guardadas…</p>
+          </div>
+
+          <div class="state state-error" data-searches-state="error" role="alert" hidden>
+            <p class="state-title mb-0" data-searches-error-msg data-i18n="No se pudieron cargar las búsquedas guardadas.">No se pudieron cargar las búsquedas guardadas.</p>
+          </div>
+
+          <div class="searches-list" data-searches-list aria-live="polite"></div>
+
+          <div class="card mt-md" data-searches-notifications-card hidden>
+            <h3 data-i18n="Avisos recientes">Avisos recientes</h3>
+            <p class="text-small text-faint mt-0" data-i18n="Solo se muestran en la web. No se envían emails, ni a Telegram, ni se piden permisos del navegador.">Solo se muestran en la web. No se envían emails, ni a Telegram, ni se piden permisos del navegador.</p>
+            <div class="notifications-list" data-notifications-list aria-live="polite"></div>
+            <div class="save-row mt-sm">
+              <button class="btn btn-ghost" type="button" data-action="mark-all-notifications" data-i18n="Marcar todo como leído">Marcar todo como leído</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- Vista: Cuenta -->
+        <section class="page-section" data-view="cuenta" aria-labelledby="cuenta-title" hidden>
+          <div class="section-head">
+            <div>
+              <h2 id="cuenta-title" data-i18n="Cuenta">Cuenta</h2>
+              <p class="section-sub" data-i18n="Al cambiar la contraseña se cerrarán tus sesiones abiertas.">Al cambiar la contraseña se cerrarán tus sesiones abiertas.</p>
+            </div>
+          </div>
+
+          <div class="card card-narrow">
+            <h3 data-i18n="Cambiar contraseña">Cambiar contraseña</h3>
+            <form data-form-password>
+              <div class="field">
+                <label class="field-label" for="acc-current" data-i18n="Contraseña actual">Contraseña actual</label>
+                <input class="input" id="acc-current" type="password" required autocomplete="current-password" data-pw-current>
+              </div>
+              <div class="field">
+                <label class="field-label" for="acc-new" data-i18n="Nueva contraseña">Nueva contraseña</label>
+                <input class="input" id="acc-new" type="password" required minlength="12" autocomplete="new-password" data-pw-new>
+              </div>
+              <div class="field">
+                <label class="field-label" for="acc-confirm" data-i18n="Repite la nueva contraseña">Repite la nueva contraseña</label>
+                <input class="input" id="acc-confirm" type="password" required minlength="12" autocomplete="new-password" data-pw-confirm>
+              </div>
+              <div class="save-row">
+                <button class="btn btn-primary" type="submit" data-i18n="Actualizar contraseña">Actualizar contraseña</button>
+                <span class="save-feedback" data-pw-feedback aria-live="polite"></span>
+              </div>
+            </form>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <!-- Drawer de detalle -->
+  <div class="drawer-backdrop" data-drawer-backdrop hidden></div>
+  <aside class="drawer" id="item-drawer" role="dialog" aria-modal="true" aria-labelledby="drawer-title" aria-hidden="true" inert>
+    <header class="drawer-header">
+      <h2 class="drawer-title" id="drawer-title" data-drawer-title>Cargando…</h2>
+      <button class="drawer-close" type="button" data-drawer-close data-i18n-attr="aria-label: Cerrar detalle" aria-label="Cerrar detalle" data-i18n="Cerrar">Cerrar</button>
+    </header>
+    <div class="drawer-body" data-drawer-body>
+      <div class="state" data-drawer-state="loading" role="status" aria-live="polite">
+        <div class="spinner" aria-hidden="true"></div>
+        <p class="state-title mb-0" data-i18n="Cargando detalle…">Cargando detalle…</p>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Photo lightbox -->
+  <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" data-i18n-attr="aria-label: Imagen ampliada" aria-label="Imagen ampliada" data-lightbox hidden>
+    <button class="lightbox-close" type="button" data-lightbox-close data-i18n-attr="aria-label: Cerrar imagen" aria-label="Cerrar imagen" data-i18n="Cerrar">Cerrar</button>
+    <button class="lightbox-prev" type="button" data-lightbox-prev aria-label="Anterior foto" data-i18n-attr="aria-label: Anterior foto">‹</button>
+    <img class="lightbox-img" alt="" data-lightbox-img>
+    <div class="lightbox-caption" data-lightbox-caption></div>
+    <div class="lightbox-counter" data-lightbox-counter></div>
+    <button class="lightbox-next" type="button" data-lightbox-next aria-label="Siguiente foto" data-i18n-attr="aria-label: Siguiente foto">›</button>
+    <div class="lightbox-shortcut" data-lightbox-shortcut>← → · Esc</div>
+  </div>
+
+  <!-- Keyboard shortcuts dialog -->
+  <div class="shortcuts-dialog" data-shortcuts-dialog hidden role="dialog" aria-modal="true" aria-labelledby="shortcuts-title">
+    <div class="shortcuts-dialog-card">
+      <header class="shortcuts-dialog-head">
+        <h2 id="shortcuts-title" data-i18n="Atajos de teclado">Atajos de teclado</h2>
+        <button class="shortcuts-dialog-close" type="button" data-shortcuts-close data-i18n-attr="aria-label: Cerrar ayuda" aria-label="Cerrar ayuda" data-i18n="Cerrar">Cerrar</button>
+      </header>
+      <div class="shortcuts-dialog-body" data-shortcuts-body>
+        <!-- Rows are rendered dynamically to reflect translations. -->
+      </div>
+      <p class="text-small text-faint mt-sm" data-i18n="Los atajos no se activan mientras escribes en un campo.">Los atajos no se activan mientras escribes en un campo.</p>
+    </div>
+  </div>
+
+  <!-- Toasts -->
+  <div class="toast-region" data-toast-region aria-live="polite" aria-atomic="false" hidden></div>
+
+  <!-- Saved-search editor modal (populated dynamically by saved-searches.js) -->
+  <div class="drawer-backdrop" data-search-editor-backdrop hidden></div>
+  <aside class="drawer" id="search-editor-drawer" role="dialog" aria-modal="true" aria-labelledby="search-editor-title" aria-hidden="true" inert>
+    <header class="drawer-header">
+      <h2 class="drawer-title" id="search-editor-title" data-search-editor-title>—</h2>
+      <button class="drawer-close" type="button" data-search-editor-close data-i18n-attr="aria-label: Cerrar editor" aria-label="Cerrar editor" data-i18n="Cerrar">Cerrar</button>
+    </header>
+    <div class="drawer-body" data-search-editor-body></div>
+  </aside>
+
+  <script src="/static/saved-searches.js" defer></script>
+  <script src="/static/app.js" defer></script>
+</body>
+</html>

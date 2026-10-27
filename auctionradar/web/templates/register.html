@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#14233a">
+  <meta name="description" content="Registro de cuenta privada en AuctionRadar.">
+  <meta name="robots" content="noindex, nofollow">
+  <title data-i18n="Crear cuenta · AuctionRadar">Crear cuenta · AuctionRadar</title>
+  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+  <script src="/static/ui.js"></script>
+  <link rel="stylesheet" href="/static/app.css">
+</head>
+<body>
+  <a class="skip-link" href="#main" data-i18n="Saltar al contenido principal">Saltar al contenido principal</a>
+  <main id="main" class="login-shell">
+    <section class="login-card" aria-labelledby="register-title">
+      <div class="login-brand">
+        <span class="login-brand-mark" aria-hidden="true">R</span>
+        <span class="login-brand-text">
+          <span class="login-brand-name" data-i18n="AuctionRadar">AuctionRadar</span>
+          <span class="login-brand-sub" data-i18n="Subastas bajo seguimiento">Subastas bajo seguimiento</span>
+        </span>
+        <div class="ui-preferences login-preferences" aria-label="Preferencias" data-i18n-attr="aria-label: Preferencias">
+          <label class="ui-preference ui-language-select-wrap">
+            <span class="ui-preference-label" data-i18n="Idioma">Idioma</span>
+            <select class="ui-language-select" data-language-select>
+              <option value="es">Español</option>
+              <option value="en">English</option>
+            </select>
+          </label>
+          <button class="ui-preference ui-theme-toggle" type="button" data-theme-toggle aria-pressed="false" aria-label="Cambiar tema" title="Cambiar tema"><span class="ui-theme-toggle-label" data-theme-label>Claro</span></button>
+        </div>
+      </div>
+
+      <h1 id="register-title" data-i18n="Crear cuenta">Crear cuenta</h1>
+      <p class="login-tagline" data-i18n="Crea una cuenta para gestionar tu espacio privado de subastas.">Crea una cuenta para gestionar tu espacio privado de subastas.</p>
+
+      {% if error %}
+        <div class="alert alert-error" role="alert" data-registration-error data-registration-error-key="{{ error|e }}">{{ error|e }}</div>
+      {% endif %}
+
+      <form method="POST" action="/register" novalidate>
+        <input type="hidden" name="csrf_token" value="{{ csrf_token()|e }}">
+        <div class="field">
+          <label class="field-label" for="username" data-i18n="Usuario">Usuario</label>
+          <input class="input" id="username" name="username" type="text" autocomplete="username" minlength="3" maxlength="32" required spellcheck="false" autocapitalize="none" autocorrect="off" aria-required="true">
+        </div>
+        <div class="field">
+          <label class="field-label" for="password" data-i18n="Contraseña">Contraseña</label>
+          <input class="input" id="password" name="password" type="password" autocomplete="new-password" minlength="12" maxlength="128" required aria-required="true">
+          <p class="text-small text-faint" data-i18n="La contraseña debe tener entre 12 y 128 caracteres.">La contraseña debe tener entre 12 y 128 caracteres.</p>
+        </div>
+        <button class="btn btn-primary btn-block" type="submit" data-i18n="Crear cuenta">Crear cuenta</button>
+      </form>
+      <p class="text-small text-faint mt-md mb-0"><a href="/login" data-i18n="Iniciar sesión">Iniciar sesión</a></p>
+    </section>
+  </main>
+</body>
+</html>

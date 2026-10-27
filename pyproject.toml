@@ -1,0 +1,41 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "auctionradar"
+version = "0.1.0"
+description = "Self-hosted auction research with private user workspaces"
+readme = "README.md"
+requires-python = ">=3.10"
+license = "LicenseRef-AuctionRadar-Noncommercial-1.0"
+license-files = ["LICENSE", "THIRD_PARTY_NOTICES.md"]
+dynamic = ["dependencies"]
+
+[project.urls]
+Repository = "https://github.com/jojoyaco/auctionradar"
+
+[project.scripts]
+auctionradar = "auctionradar.cli:main"
+
+[project.optional-dependencies]
+dev = ["ruff==0.17.3"]
+
+[tool.setuptools.packages.find]
+include = ["auctionradar*"]
+namespaces = false
+
+[tool.setuptools.package-data]
+auctionradar = ["defaults/*.json"]
+"auctionradar.web" = ["static/*.js", "static/*.css", "static/*.svg", "templates/*.html"]
+
+[tool.setuptools.dynamic]
+dependencies = {file = ["requirements.in"]}
+
+[tool.ruff]
+target-version = "py310"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F", "I"]
+ignore = ["E402"]

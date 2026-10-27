@@ -1,0 +1,29 @@
+<!--
+  Fixture sanitizado: pestaña "Bienes" con URLs maliciosas / no estándar.
+
+  Caso de borde: las URLs inseguras NUNCA deben llegar a `item['photos']`.
+  - `javascript:alert(1)` (enlace) — esquema no permitido.
+  - `data:image/png;base64,...` — esquema no permitido.
+  - `https://user:pass@...` — credenciales embebidas, `public_url` la rechaza.
+  - sólo una URL legítima que sí se acepta.
+
+  Subasta: SUB-AT-2026-26R0886002107.
+-->
+<!DOCTYPE html>
+<html lang="es">
+  <head><meta charset="utf-8" /><title>Detalle con URLs inseguras</title></head>
+  <body>
+    <div id="idBloqueDatos3">
+      <div class="bloque" id="idBloqueLote1">
+        <div class="caja">BUQUES EMBARCACIÓN TANOKA</div>
+        <h4>Bien 1 - Bien mueble (Buques)</h4>
+        <div class="galeria">
+          <a href="javascript:alert(1)">Click</a>
+          <img src="https://user:pass@subastas.boe.es/reg/fotos/SUB-AT-2026-26R0886002107/secret.jpg" alt="con credenciales">
+          <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=" alt="data URI">
+          <img src="/reg/fotos/SUB-AT-2026-26R0886002107/01.jpg" alt="legítima">
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

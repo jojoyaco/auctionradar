@@ -1,0 +1,27 @@
+<!--
+  Fixture sanitizado: pestaña "Bienes" que mezcla fotos del lote actual y de OTRA subasta.
+
+  Caso de borde: la pestaña contiene URLs que apuntan a otras subastas del
+  portal. `collect_boe_photos` debe detectar el idSub en el path o en la
+  query y rechazar las que NO coincidan con la subasta actual
+  (SUB-AT-2026-26R0886002107).
+
+  La URL "vecina" usa un idSub distinto (SUB-AT-2026-OTHER) que debe
+  descartarse; la URL legítima (con idSub actual) se acepta.
+-->
+<!DOCTYPE html>
+<html lang="es">
+  <head><meta charset="utf-8" /><title>Detalle con foto vecina</title></head>
+  <body>
+    <div id="idBloqueDatos3">
+      <div class="bloque" id="idBloqueLote1">
+        <div class="caja">BUQUES EMBARCACIÓN TANOKA</div>
+        <h4>Bien 1 - Bien mueble (Buques)</h4>
+        <div class="galeria">
+          <img src="/reg/fotos/SUB-AT-2026-26R0886002107/01.jpg" alt="Foto legítima">
+          <img src="/reg/fotos/SUB-AT-2026-OTHER/99.jpg" alt="Foto de otra subasta">
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

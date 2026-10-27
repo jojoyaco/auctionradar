@@ -1,0 +1,48 @@
+{
+  "$schema": "./source-catalog.schema.json",
+  "schema_version": "1.0.0",
+  "updated_on": "2026-01-01",
+  "description": "Empty per-installation source catalog. Review each source and its access conditions before adding it.",
+  "extension_policy": {
+    "new_sources": "Add only sources selected by this installation's owner, with stable IDs and evidence.",
+    "unknown_values": "Use null or unknown when information has not been verified.",
+    "deduplication": "Compare canonical listing URLs and source relationships before counting results."
+  },
+  "capability_policy": {
+    "automatic_integration": false,
+    "adapter_status": "not_configured",
+    "api_availability": "unknown",
+    "notes": "An entry in the catalog does not imply an implemented adapter or permission to access a source."
+  },
+  "iteration_policy": {
+    "filter_sources_by_asset_type": true,
+    "skip_disabled_sources": true,
+    "retain_conditional_sources": true,
+    "public_discovery_first": true,
+    "unknown_account_does_not_block_public_discovery": true,
+    "use_available_account_for_documents": false,
+    "registration_is_not_professional_eligibility": true,
+    "verify_eligibility_per_lot": true,
+    "unconfirmed_possession": "pending_review",
+    "account_source_resolution": "Confirm the authentication provider; do not assume that accounts are shared between sources.",
+    "when_registration_missing": "requires_user_registration",
+    "when_login_needed": "authentication_required",
+    "when_eligibility_unconfirmed": "eligibility_unknown",
+    "result_statuses": [
+      "requires_user_registration",
+      "authentication_required",
+      "eligibility_unknown",
+      "blocked",
+      "no_matches",
+      "checked"
+    ],
+    "result_schema_ref": "./source-catalog.schema.json#/$defs/runReport",
+    "participation_mode": "informational_only",
+    "bidding_allowed": false,
+    "account_creation_allowed": false,
+    "contact_allowed": false,
+    "notes": "Discovery is informational. Verify current listing terms; this software does not bid, contact sellers, or create source accounts."
+  },
+  "sources": [],
+  "verification_resources": []
+}

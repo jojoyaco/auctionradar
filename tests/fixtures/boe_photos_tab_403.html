@@ -1,0 +1,13 @@
+<!--
+  Fixture sanitizado: marcador de respuesta HTTP 403 del portal BOE.
+
+  Caso de borde: cuando la pestaña "Bienes" devuelve 403 (p.ej. por rate
+  limit o bloqueo regional), `enrich_boe` debe:
+  - NO borrar fotos previas que el item ya tuviera.
+  - Registrar `enrichment_limitation` con la causa real (sin inventar
+    "no images").
+  - Trazar el HTTP request con status_code=403 en la lista `requests`.
+
+  El archivo NO contiene HTML útil: el fetcher simulado devolverá 403.
+-->
+<!-- EMPTY (HTTP 403) -->

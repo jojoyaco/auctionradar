@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#14233a">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="csrf-token" content="{{ csrf_token()|e }}">
+  <title data-connection-i18n="Connections · AuctionRadar">Fuentes y accesos · AuctionRadar</title>
+  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+  <script src="/static/ui.js"></script>
+  <link rel="stylesheet" href="/static/app.css">
+  <link rel="stylesheet" href="/static/connections.css">
+</head>
+<body>
+  <a class="skip-link" href="#main" data-connection-i18n="Skip to main content">Saltar al contenido principal</a>
+  <main id="main" class="connections-page">
+    <header class="connections-head">
+      <div>
+        <a class="text-small" href="/" data-connection-i18n="Back to radar">← Volver al radar</a>
+        <h1 data-connection-i18n="Your sources and access">Tus fuentes y accesos</h1>
+        <p class="text-muted" data-connection-i18n="Manage sources privately for this account. New sources are disabled and are never fetched when saved.">
+          Gestiona fuentes privadas de esta cuenta. Las nuevas fuentes quedan desactivadas y no se consultan al guardarlas.
+        </p>
+      </div>
+      <div class="ui-preferences" aria-label="Preferencias">
+        <label class="ui-preference ui-language-select-wrap">
+          <span class="ui-preference-label" data-connection-i18n="Language">Idioma</span>
+          <select class="ui-language-select" data-language-select aria-label="Idioma">
+            <option value="es">Español</option><option value="en">English</option>
+          </select>
+        </label>
+        <button class="ui-preference ui-theme-toggle" type="button" data-theme-toggle aria-pressed="false" aria-label="Cambiar tema" title="Cambiar tema"><span class="ui-theme-toggle-label" data-theme-label>Claro</span></button>
+      </div>
+    </header>
+
+    <div id="connections-error" class="alert alert-error connections-error" role="alert" aria-live="polite"></div>
+
+    <section class="connections-card" aria-labelledby="sources-heading">
+      <div class="connections-toolbar">
+        <div>
+          <h2 id="sources-heading" data-connection-i18n="Private sources">Fuentes privadas</h2>
+          <p class="text-small text-muted" data-connection-i18n="Only selected public HTML adapters are available. Arbitrary JavaScript sites and portal logins are not implemented.">
+            Solo están disponibles los adaptadores HTML públicos indicados. No se implementan portales JavaScript arbitrarios ni inicios de sesión.
+          </p>
+        </div>
+        <button id="add-source" class="btn btn-primary" type="button" data-connection-i18n="Add source">Añadir fuente</button>
+      </div>
+      <div id="sources-list" aria-live="polite"></div>
+    </section>
+
+    <section id="source-editor" class="connections-card" aria-labelledby="source-editor-heading" hidden>
+      <h2 id="source-editor-heading" data-connection-i18n="Source details">Datos de la fuente</h2>
+      <form id="source-form">
+        <div class="connections-grid">
+          <div class="field">
+            <label class="field-label" for="source-id" data-connection-i18n="Source ID">ID de fuente</label>
+            <input class="input" id="source-id" name="id" maxlength="64" pattern="[a-z][a-z0-9]*(?:_[a-z0-9]+)*" required autocomplete="off">
+          </div>
+          <div class="field">
+            <label class="field-label" for="source-name" data-connection-i18n="Name">Nombre</label>
+            <input class="input" id="source-name" name="name" maxlength="120" required>
+          </div>
+          <div class="field">
+            <label class="field-label" for="source-url" data-connection-i18n="Public HTTPS listing URL">URL pública HTTPS</label>
+            <input class="input" id="source-url" name="url" type="url" maxlength="2048" inputmode="url" placeholder="https://portal.example/subastas" required>
+          </div>
+          <div class="field">
+            <label class="field-label" for="source-adapter" data-connection-i18n="Adapter">Adaptador</label>
+            <select class="input" id="source-adapter" name="adapter_id"></select>
+          </div>
+          <div class="field">
+            <label class="field-label" for="source-types" data-connection-i18n="Asset types (select with Ctrl or Command)">Tipos de activo (selecciona con Ctrl o Comando)</label>
+            <select class="input" id="source-types" name="asset_types" multiple required>
+              <option value="housing" data-connection-i18n="Housing">Vivienda</option>
+              <option value="vehicles" data-connection-i18n="Vehicles">Vehículos</option>
+              <option value="land" data-connection-i18n="Land">Terreno</option>
+              <option value="commercial" data-connection-i18n="Commercial property">Local comercial</option>
+              <option value="boats" data-connection-i18n="Boats">Embarcaciones</option>
+              <option value="machinery" data-connection-i18n="Machinery">Maquinaria</option>
+              <option value="electronics" data-connection-i18n="Electronics">Electrónica</option>
+              <option value="furniture" data-connection-i18n="Furniture">Mobiliario</option>
+              <option value="collectibles" data-connection-i18n="Collectibles">Coleccionables</option>
+              <option value="other" data-connection-i18n="Other">Otros</option>
+            </select>
+          </div>
+          <div class="field">
+            <label class="connections-checkbox"><input id="source-enabled" name="enabled" type="checkbox"><span data-connection-i18n="Enable for a future run">Activar para futuras búsquedas</span></label>
+          </div>
+        </div>
+        <p class="connections-note text-small" data-connection-i18n="Saving does not contact the portal. URLs must use HTTPS and resolve only to public IP addresses; redirect destinations are checked again at fetch time.">
+          Guardar no contacta el portal. La URL debe usar HTTPS y resolver solo a direcciones IP públicas; los destinos de redirección se vuelven a comprobar al consultar.
+        </p>
+        <div class="connections-actions">
+          <button class="btn btn-primary" type="submit" data-connection-i18n="Save source">Guardar fuente</button>
+          <button id="cancel-source" class="btn" type="button" data-connection-i18n="Cancel">Cancelar</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="connections-card" aria-labelledby="certificate-heading">
+      <h2 id="certificate-heading" data-connection-i18n="Optional BOE certificate">Certificado opcional del BOE</h2>
+      <p class="text-small text-muted" data-connection-i18n="A personal P12/PFX is used only to access authenticated BOE asset photos. It does not retrieve documents or perform bidding, account changes, or access other portals.">
+        Un P12/PFX personal solo se usa para acceder a fotografías autenticadas de activos del BOE. No descarga documentos, puja, cambia la cuenta ni accede a otros portales.
+      </p>
+      <div id="certificate-status" class="connections-note" aria-live="polite"></div>
+      <p class="text-small text-muted" data-connection-i18n="Uploading transfers a signing identity to this server. Encryption at rest does not protect against its administrator; use only an instance you trust.">Subir el certificado entrega una identidad de firma a este servidor. El cifrado en reposo no protege frente a su administrador; utiliza solo una instancia de confianza.</p>
+      <form id="certificate-form" enctype="multipart/form-data">
+        <div class="connections-grid">
+          <div class="field">
+            <label class="field-label" for="certificate-file" data-connection-i18n="P12 or PFX file">Archivo P12 o PFX</label>
+            <input class="input" id="certificate-file" name="certificate" type="file" accept=".p12,.pfx,application/x-pkcs12" required>
+          </div>
+          <div class="field">
+            <label class="field-label" for="certificate-passphrase" data-connection-i18n="Certificate passphrase">Contraseña del certificado</label>
+            <input class="input" id="certificate-passphrase" name="passphrase" type="password" autocomplete="new-password" maxlength="256" required>
+          </div>
+        </div>
+        <label class="connections-checkbox field">
+          <input id="certificate-consent" name="consent" type="checkbox" value="yes" required>
+          <span data-connection-i18n="I explicitly consent to use this certificate for authenticated BOE asset photos. I can disable or delete it at any time.">
+            Autorizo expresamente el uso de este certificado para acceder a fotografías autenticadas de activos del BOE. Puedo desactivarlo o borrarlo en cualquier momento.
+          </span>
+        </label>
+        <div class="connections-actions">
+          <button class="btn btn-primary" type="submit" data-connection-i18n="Encrypt and save certificate">Cifrar y guardar certificado</button>
+          <button id="toggle-certificate" class="btn" type="button" hidden></button>
+          <button id="delete-certificate" class="btn" type="button" hidden data-connection-i18n="Delete certificate">Borrar certificado</button>
+        </div>
+      </form>
+      <p class="text-small text-faint" data-connection-i18n="The passphrase is never returned by the API. The encrypted file requires a separately provisioned private key file; no certificate is preconfigured or shared between accounts.">
+        La API nunca devuelve la contraseña. El archivo cifrado requiere una clave privada provisionada por separado; no hay certificados preconfigurados ni compartidos entre cuentas.
+      </p>
+    </section>
+
+    <footer class="connections-footer text-small text-muted">
+      <span data-connection-i18n="Signed in as">Sesión:</span> <strong>{{ user.username|e }}</strong>
+      <span aria-hidden="true">·</span>
+      <a href="/" data-connection-i18n="Return to radar">Volver al radar</a>
+    </footer>
+  </main>
+  <script src="/static/connections.js" defer></script>
+</body>
+</html>
