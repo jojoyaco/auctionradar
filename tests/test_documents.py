@@ -70,8 +70,9 @@ class DocumentTests(unittest.TestCase):
         self.assertEqual(item["documents"][0]["scope"], "site_policy")
         self.assertEqual(item["documents"][0]["read_status"], "not_read_site_policy")
 
-    def test_pdf_text_extraction(self):
-        # Minimal valid document; the optional converter's command contract is mocked.
+    @staticmethod
+    def _synthetic_pdf():
+        # Minimal valid document shared by unit and real-converter coverage.
         objects = [
             b"<< /Type /Catalog /Pages 2 0 R >>",
             b"<< /Type /Pages /Kids [3 0 R] /Count 1 >>",
@@ -95,6 +96,10 @@ class DocumentTests(unittest.TestCase):
             + str(start).encode()
             + b"\n%%EOF"
         )
+        return data
+
+    def test_pdf_text_extraction(self):
+        data = self._synthetic_pdf()
         item = {"documents": [{"url": "https://example.org/a.pdf"}]}
         output = b"Condiciones oficiales 2026\n"
         fetch = Mock(return_value=data)
@@ -132,6 +137,26 @@ class DocumentTests(unittest.TestCase):
             self.assertEqual(doc["sha256"], expected_sha)
             self.assertEqual(doc["text_path"], str(Path(tmp) / (expected_sha + ".pdf.txt")))
             self.assertEqual(Path(doc["text_path"]).read_text(encoding="utf-8"), output.decode())
+
+    @unittest.skipUnless(
+        document_reader.shutil.which("pdftotext"), "Optional Poppler not installed"
+    )
+    def test_real_pdf_text_extraction(self):
+        data = self._synthetic_pdf()
+        item = {"documents": [{"url": "https://example.org/synthetic.pdf"}]}
+        fetch = Mock(return_value=data)
+        with tempfile.TemporaryDirectory() as tmp:
+            context = {"raw_dir": Path(tmp), "observed_at": "2026-10-17"}
+            document_reader.enrich_documents(item, context, fetch=fetch)
+            fetch.assert_called_once_with("https://example.org/synthetic.pdf", context)
+            doc = item["documents"][0]
+            self.assertEqual(doc["read_status"], "text_extracted")
+            self.assertIn("Condiciones oficiales 2026", doc["extracted_text"])
+            self.assertEqual(doc["sha256"], hashlib.sha256(data).hexdigest())
+            self.assertEqual(doc["text_scope"], "all_pages_text_only_no_ocr")
+            self.assertEqual(
+                Path(doc["text_path"]).read_text(encoding="utf-8"), doc["extracted_text"]
+            )
 
 
 if __name__ == "__main__":
