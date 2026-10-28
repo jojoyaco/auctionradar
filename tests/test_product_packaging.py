@@ -280,6 +280,7 @@ class ProductPackagingTests(unittest.TestCase):
         admin = (product / "auctionradar-create-admin").read_text(encoding="utf-8")
         self.assertIn("--password-stdin", admin)
         self.assertIn("AUCTIONRADAR_CREDENTIALS_KEY_FILE=/etc/auctionradar/credential.key", admin)
+        self.assertIn("AUCTIONRADAR_SESSION_SECURE=true", admin)
         self.assertNotRegex(admin, r"--password(?:\s|$)")
         self.assertIn('--username "$1"', admin)
 
