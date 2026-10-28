@@ -11,6 +11,8 @@
 | [Light screenshot](media/auctionradar-overview.png) | PNG, 1440 × 900 | Static alternative to the animation. |
 | [Dark screenshot](media/auctionradar-dark.png) | PNG, 1440 × 900 | Same synthetic grid in dark theme. |
 
+### Scope and known limitations
+
 This is the **real, unchanged AuctionRadar UI** in a fresh private workspace.
 The five fictional records are ingested through the application's ingestion
 code; review decisions and notes use the real application API and are read back
