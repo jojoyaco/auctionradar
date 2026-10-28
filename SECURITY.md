@@ -17,9 +17,9 @@ tokens, personal data, or production state.**
   [private reporting form](https://github.com/jojoyaco/auctionradar/security/advisories/new).
   That feature must be enabled and verified by a maintainer when the repository
   becomes public; its availability must not be assumed for a private repository.
-- Otherwise, use the contact email published on the
-  [owning organization's GitHub profile](https://github.com/jojoyaco) to request
-  private coordination. Start with a brief, non-sensitive summary and obtain
+- Otherwise, email [asdf@jojoya.es](mailto:asdf@jojoya.es), the monitored
+  maintainer contact, to request private coordination. Start with a brief,
+  non-sensitive summary and obtain
   agreement on how to exchange detailed evidence. Do not send private keys,
   account passwords, certificates, or a production database.
 
