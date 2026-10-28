@@ -2,94 +2,82 @@
 
 [Back to the README](../README.md#see-it-in-action)
 
-## Files
+## Current capture
 
 | Asset | Format | Purpose |
 | --- | --- | --- |
-| [Walkthrough](media/auctionradar-demo.mp4) | H.264 MP4, 1440 × 900, 25 fps, about 26 seconds, no audio | Full-resolution video and GIF conversion source. |
-| [README animation](media/auctionradar-demo.gif) | GIF, 960 × 600, 8 fps, about 4.2 MiB | Inline, looping GitHub README demo. |
+| [Walkthrough](media/auctionradar-demo.mp4) | H.264 MP4, 1440 × 900, 25 fps, 20.16 s, 1.86 MB, no audio | Full-resolution walkthrough. |
+| [README animation](media/auctionradar-demo.gif) | GIF, 960 × 600, 8.33 fps, 20.13 s, 161 frames, 3.20 MB, looping | Compact inline preview; below the 5 MiB limit. |
 | [Light screenshot](media/auctionradar-overview.png) | PNG, 1440 × 900 | Static alternative to the animation. |
-| [Dark screenshot](media/auctionradar-dark.png) | PNG, 1440 × 900 | Dark-theme reference. |
+| [Dark screenshot](media/auctionradar-dark.png) | PNG, 1440 × 900 | Same synthetic grid in dark theme. |
 
-## What was recorded
+This is the **real, unchanged AuctionRadar UI** in a fresh private workspace.
+The five fictional records are ingested through the application's ingestion
+code; review decisions and notes use the real application API and are read back
+after a reload. The capture shows the listing grid and detail gallery, switches
+between English and Spanish UI text and light and dark themes, and saves a
+fictional review.
 
-The application was run from the initial product release (`8854033`) on
-October 27, 2026, in a disposable private workspace bound to loopback. Chromium
-was driven with Playwright; API responses and listing data were not mocked,
-and no application code or page styling was changed for the recording.
+All listing titles, locations, prices, and other facts are deterministic
+synthetic fixtures. Each title is marked `DEMO`; every image is an original,
+procedurally generated same-origin SVG illustration visibly labelled as a
+synthetic illustration, not a photograph. The UI and APIs are not mocked or
+restyled for the capture. The test-only fixture and routes live under `tests/`
+and are excluded from the product package.
 
-Public BOE and Escogecasa sources were added through **Sources and access**.
-A real search was completed with the application runner before recording:
-six BOE items and six Escogecasa items were ingested. Both sources reported
-partial, bounded coverage. This is not an exhaustive inventory.
+The recorder clears inherited `AUCTIONRADAR_*` and `CREDENTIALS_DIRECTORY`
+variables, uses a fresh temporary data directory and random disposable account
+password, and binds only to `127.0.0.1`. Browser routing blocks every non-loopback
+request. The fixture refuses search-run and saved-search mutations; it has no
+configured source catalog, AI provider, or portal access. Registration and the
+authenticated capture remain within the disposable local workspace. No
+production data or credentials, portal/provider traffic, third-party images, or
+AI inference are used.
 
-The video starts with **With photos** enabled, so the opening grid contains
-Escogecasa results. It then shows:
+## Reproduce
 
-1. Filtering to housing and searching for Castellón.
-2. Advancing a listing photograph and opening its real gallery and details.
-3. Entering a demonstration note, saving it, and marking the item as OK.
-4. Clearing the text search and switching to dark mode and back.
-
-Both review writes returned HTTP 200. The saved note and OK status were read
-back after a page reload. The final recorded workflow had no JavaScript page
-errors. The MP4 and GIF were decoded and representative frames inspected.
-
-No production accounts, credentials, certificates, or private production notes
-were used. The visible `demo-researcher` identity and note belong only to the
-disposable capture account. No public share token was created. Listing titles,
-prices, and photographs are source-published material, not generated examples;
-they can change and remain subject to their owners' terms. See
-[third-party notices](../THIRD_PARTY_NOTICES.md).
-
-### Scope and known limitations
-
-This capture demonstrates the manual review workflow, not AI inference,
-end-to-end search queueing, authenticated BOE photographs, bidding, or a
-production deployment. The prompt-based AI review described in the README is
-an optional application feature; no AI provider was used in this recording.
-
-During preparation, a UI-queued worker exited before completing its run; a
-successful public search was instead completed by invoking the application
-runner with explicit workspace paths. The recording does not imply that the
-queued-worker issue was repaired.
-
-Changing the language interactively also produced a pre-existing
-`Maximum call stack size exceeded` error: `onLanguageChange` in
-`auctionradar/web/static/app.js` redispatches the event it handles. The final
-recording stays in English and does not demonstrate language switching.
-Neither issue was changed as part of this documentation/media task.
-
-A later prepublication hardening change repairs both code paths and adds
-regressions: the API-to-detached-worker timeout handoff and failed-worker
-recovery are covered by `tests/test_queued_worker.py`, while the all-scenarios
-browser runner checks one language event per change with drafts/focus preserved.
-Those tests use synthetic fixtures; this existing recording remains a manual
-review demonstration, not a new end-to-end portal or AI demonstration. See
-[CI](CI.md) and [verification](VERIFICATION.md) for the current checks.
-
-## Regenerate the GIF
-
-Run from the repository root with a full FFmpeg installation providing
-`palettegen` and `paletteuse`:
+From the repository root, install the hash-pinned application dependencies and
+the pinned browser library into a disposable work directory. Supply local
+Chromium and FFmpeg executables:
 
 ```sh
-ffmpeg -y -i docs/media/auctionradar-demo.mp4 \
-  -filter_complex 'fps=8,scale=960:-2:flags=lanczos,split[a][b];[a]palettegen=max_colors=128:stats_mode=diff[p];[b][p]paletteuse=dither=none:diff_mode=rectangle' \
-  -loop 0 docs/media/auctionradar-demo.gif
+DEMO_WORK=/tmp/auctionradar-demo
+python3 -m venv "$DEMO_WORK/venv"
+"$DEMO_WORK/venv/bin/pip" install --require-hashes -r requirements.txt
+npm install --prefix "$DEMO_WORK/node" --ignore-scripts --no-audit --no-fund --no-save playwright-core@1.64.1
+NODE_PATH="$DEMO_WORK/node/node_modules" node tests/record_demo.cjs \
+  --python "$DEMO_WORK/venv/bin/python" \
+  --chrome /path/to/chrome \
+  --ffmpeg /path/to/ffmpeg \
+  --work-root "$DEMO_WORK/work" \
+  --evidence-dir "$DEMO_WORK/evidence"
 ```
 
-The complete walkthrough is retained at normal speed. Resolution, frame rate,
-and palette size are reduced to keep the README asset small. The MP4 is the
-higher-quality alternative. The README links a static PNG for readers who
-prefer no animation.
+The script writes the four current media assets to `docs/media/`, keeps raw
+recording and disposable application state under `--work-root`, and writes
+redacted verification metadata plus theme screenshots and sample frames under
+`--evidence-dir`. It checks real API persistence, zero browser page errors,
+zero non-loopback requests, image/video dimensions, H.264 output, and the GIF
+size ceiling. It does not run a source search or claim portal coverage.
 
-To record a new walkthrough, use a fresh local instance and disposable account,
-configure public sources, complete a real search, and check source limitations.
-Record a 1440 × 900 viewport with Playwright's `recordVideo` option; close the
-browser context before saving the video. Keep login and workspace setup outside
-the final cut. Review every frame for sensitive information before committing.
-
-References: [Playwright video recording](https://playwright.dev/docs/videos),
+Playwright closes the browser context before its recording is converted. FFmpeg
+uses `palettegen`/`paletteuse` for the GIF and H.264 for the MP4. See the
+[Playwright video documentation](https://playwright.dev/docs/videos),
+[browser context API](https://playwright.dev/docs/api/class-browser#browser-new-context),
 [FFmpeg palette generation](https://ffmpeg.org/ffmpeg-filters.html#palettegen),
 and [palette application](https://ffmpeg.org/ffmpeg-filters.html#paletteuse).
+
+## Historical capture and rights boundary
+
+An earlier capture, recorded on 2026-10-27 from source revision `8854033`, used
+public BOE and Escogecasa results and listing photographs. It showed partial,
+bounded source results and a different manual-review walkthrough; those facts
+describe only that historical capture, not the synthetic assets above.
+
+Replacing the current four files does **not** delete or rewrite older media in
+Git history, other refs, CI artifacts, backups, or external copies. Rights to
+historical portal material remain unresolved; this synthetic replacement is not
+legal clearance or a complete publication-history audit. Review prior refs and
+copies separately before making publication claims. See the
+[publication checklist](RELEASING.md#before-making-the-repository-public) and
+[third-party notices](../THIRD_PARTY_NOTICES.md).

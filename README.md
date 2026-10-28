@@ -85,7 +85,7 @@ secrets in a prompt.
 
 ## See it in action
 
-![AuctionRadar demo: filter public listings, browse photos, save a private review, and switch to dark mode](docs/media/auctionradar-demo.gif)
+![AuctionRadar demo: review fictional listings with synthetic illustrations, switch languages and themes, and save a private review](docs/media/auctionradar-demo.gif)
 
 <p align="center">
   <a href="docs/media/auctionradar-demo.mp4">Watch or download the full-resolution video</a> ·
@@ -93,12 +93,14 @@ secrets in a prompt.
   <a href="docs/DEMO.md">Recording notes</a>
 </p>
 
-**A real application, not a mockup.** Recorded locally using public BOE and
-Escogecasa results retrieved on October 27, 2026, with a disposable account.
-The walkthrough shows filtering, photos, a saved review, and light/dark themes.
-It does not demonstrate AI inference, search execution, or authenticated BOE
-access. Listings remain in their original language; displayed prices are not
-verified total costs.
+**Real application, synthetic content.** The unchanged UI and application APIs
+run locally in a fresh private workspace. All five listing records and their
+facts are fictional deterministic fixtures; the original SVG illustrations
+are labelled synthetic and are not listing photographs. The walkthrough shows
+the grid, a detail gallery, English/Spanish UI text, light/dark themes, and a
+saved private review that persists after reload. No portal, search worker, AI
+provider, or production data is used. See [recording notes](docs/DEMO.md) for
+the capture boundary and historical-media rights caveat.
 
 ## Built for a careful review
 

@@ -14,6 +14,9 @@ run. Do not change visibility or deploy merely to finish a contribution.
   fixture and third-party component. Publicly visible portal content is not
   automatically cleared for redistribution. Record permission/terms evidence
   or replace the material with appropriately licensed or synthetic content.
+- [ ] Review previous demo media across Git history, refs, CI artifacts, and
+  retained copies. Replacing current files with synthetic content does not erase
+  older portal images or establish legal clearance for historical material.
 - [ ] Keep the custom noncommercial license and third-party notices prominent.
   Do not call AuctionRadar OSI open source or change licensing without an
   explicit maintainer decision. Qualified legal review is a separate task.

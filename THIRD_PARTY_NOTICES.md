@@ -36,5 +36,11 @@ Advertisements, images, documents, auction terms, trademarks and source-portal
 data remain subject to their original rights and access conditions. This
 project grants no ownership or redistribution permission over those materials.
 
+The current demo media uses fictional fixture records and original procedural
+SVG illustrations; it contains no listing photographs. This applies only to the
+four current files documented in [Demo assets](docs/DEMO.md), not to older
+revisions, refs, artifacts, backups, or external copies. Historical media rights
+remain unresolved; this notice is not legal clearance.
+
 Development-only browser tooling is not bundled in the product archive. Review
 the licenses of any browser or Playwright installation you distribute separately.
