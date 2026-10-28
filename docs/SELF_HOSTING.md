@@ -17,9 +17,12 @@ existing guests, or expose the web service. Defaults are 2 cores, 2048 MiB RAM,
 these resources are not a sizing recommendation for running an LLM in the CT.
 
 The installer is a **project-maintained preview**, not a Community Helper
-Scripts entry. It targets amd64 PVE 8/9; a full real-host installation is still
-unverified. Read the [Proxmox guide](PROXMOX.md) for requirements, source trust,
-unattended inputs, download-free dry-runs, and the manual package alternative.
+Scripts entry. A real installation has been verified on amd64 PVE 9.2.21 with
+Debian 13, including loopback-only HTTPS and synthetic-account isolation. PVE 8,
+the standalone launcher's remote-download path, public/LAN access, and live AI
+inference remain unverified. Read the [Proxmox guide](PROXMOX.md) for
+requirements, source trust, unattended inputs, download-free dry-runs, and the
+manual package alternative.
 
 **Installation is not the same as enabling browser access.** After it finishes:
 from the Proxmox node's root Shell, run `pct enter <CTID>` (using the chosen ID).

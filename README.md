@@ -165,10 +165,12 @@ Configure HTTPS, then create an administrator inside it with
 listener stays private to the container until HTTPS is configured. No default
 passwords, open registration, or Internet exposure are enabled for you.
 
-> **Preview installer:** targets amd64 Proxmox VE 8/9; a complete installation
-> on a real Proxmox host remains unverified. This is AuctionRadar's own helper,
-> **not an official Community Helper Script**. Downloading and running it trusts
-> this repository with root access—review the script first if preferred.
+> **Preview installer:** a real installation has been verified on amd64
+> Proxmox VE 9.2.21 with Debian 13. PVE 8 and the standalone launcher's remote
+> download path remain unverified; public/LAN access and live AI inference were
+> not tested. This is AuctionRadar's own helper, **not an official Community
+> Helper Script**. Downloading and running it trusts this repository with root
+> access—review the script first if preferred.
 
 [Installation guide, unattended mode, and dry-run](docs/PROXMOX.md) ·
 [HTTPS and first login](docs/SELF_HOSTING.md#production-https) ·
@@ -232,7 +234,8 @@ The [guided Proxmox VE installer](#install-on-proxmox-ve) creates a **fresh,
 unprivileged Debian 13 LXC**, with application code separate from persistent
 data. An [explicit offline-package path](docs/PROXMOX.md#manual-package-installation)
 is also available. The installer does not configure public Internet access or
-enable scheduled jobs, and a full real-host Proxmox installation remains unverified.
+enable scheduled jobs. Real-host installation verification currently covers
+PVE 9.2.21 only; see the [verification limits](docs/VERIFICATION.md) for scope.
 
 - [Self-hosting, HTTPS, secrets, and backups](docs/SELF_HOSTING.md)
 - [Proxmox installation and packaging](docs/PROXMOX.md)
