@@ -101,3 +101,15 @@ and [budget controls](https://docs.github.com/en/billing/how-tos/set-up-budgets)
 The standard Ubuntu 24.04 runner avoids paid larger runners. Workflow dependencies
 are pinned to upstream action commits, with weekly Dependabot updates limited to
 GitHub Actions so it does not duplicate the repository's runtime lock updates.
+
+## Checks versus enforced merge gates
+
+A green workflow reports the checks that ran; it does not by itself prevent an
+unchecked merge. The current private GitHub Free organization repository cannot
+enable branch protection or rulesets: GitHub's API returns a plan/visibility
+restriction. This is not a restriction that workflow YAML can remove. Keep the
+repository private and free-only unless the owner separately chooses otherwise;
+review all four CI jobs before merging. Recheck available protection and private
+vulnerability-reporting features if the plan or visibility changes. See
+[GitHub's branch-protection documentation](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches/about-protected-branches)
+and the [private security contact](../SECURITY.md).
