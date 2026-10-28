@@ -46,6 +46,8 @@ class AdminBootstrapTests(unittest.TestCase):
                 "    index += 1\n"
                 "if index >= len(command) or command[index] != '/opt/auctionradar/venv/bin/python':\n"
                 "    raise SystemExit('unexpected installed Python command')\n"
+                "if env.get('PYTHONPATH') != '/opt/auctionradar/app':\n"
+                "    raise SystemExit('missing installed application import path')\n"
                 f"env['AUCTIONRADAR_DATA_DIR'] = {str(data)!r}\n"
                 f"env['AUCTIONRADAR_SECRET_FILE'] = {str(secret)!r}\n"
                 f"env['AUCTIONRADAR_CREDENTIALS_KEY_FILE'] = {str(credentials)!r}\n"
@@ -57,7 +59,7 @@ class AdminBootstrapTests(unittest.TestCase):
             environment = {
                 name: value
                 for name, value in os.environ.items()
-                if not name.startswith("AUCTIONRADAR_")
+                if not name.startswith("AUCTIONRADAR_") and name != "PYTHONPATH"
             }
             environment["PATH"] = (
                 str(fake_bin)

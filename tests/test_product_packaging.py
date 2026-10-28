@@ -281,6 +281,7 @@ class ProductPackagingTests(unittest.TestCase):
         self.assertIn("--password-stdin", admin)
         self.assertIn("AUCTIONRADAR_CREDENTIALS_KEY_FILE=/etc/auctionradar/credential.key", admin)
         self.assertIn("AUCTIONRADAR_SESSION_SECURE=true", admin)
+        self.assertIn("PYTHONPATH=/opt/auctionradar/app", admin)
         self.assertNotRegex(admin, r"--password(?:\s|$)")
         self.assertIn('--username "$1"', admin)
 

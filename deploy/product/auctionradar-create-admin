@@ -16,6 +16,7 @@ exec runuser --user auctionradar -- env \
     AUCTIONRADAR_WORKSPACE_MODE=private \
     AUCTIONRADAR_REGISTRATION_ENABLED=false \
     AUCTIONRADAR_SESSION_SECURE=true \
+    PYTHONPATH=/opt/auctionradar/app \
     AUCTIONRADAR_DATA_DIR=/var/lib/auctionradar \
     AUCTIONRADAR_SECRET_FILE=/etc/auctionradar/session.key \
     AUCTIONRADAR_CREDENTIALS_KEY_FILE=/etc/auctionradar/credential.key \
