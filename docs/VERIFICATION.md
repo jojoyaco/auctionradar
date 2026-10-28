@@ -24,8 +24,8 @@ The reorganized `auctionradar/` package was checked with the following results:
 - A Gitleaks 8.30.1 scan of the sanitized tree found no credentials. This does not
   prove the absence of all sensitive data or replace an independent audit.
 
-Legal review of the license and a full installation on a real Proxmox host remain
-pending.
+Legal review of the license remains pending. Real PVE 9.2.21 installation
+coverage is recorded below; PVE 8 remains unverified.
 
 ## Guided Proxmox installer — 2026-10-27
 
@@ -44,9 +44,37 @@ PVE tools. No actual host packages, guests, or network configuration were change
 - The HTTPS configuration example is retained inside new installations at
   `/etc/auctionradar/nginx-https.conf.example`.
 
-These are simulated-host and extracted-application checks, **not** evidence of
-a successful end-to-end install on real Proxmox VE 8/9. The helper remains a
-project-maintained preview, not an accepted Community Helper Script.
+These 2026-10-27 checks were simulated-host and extracted-application checks.
+They were not evidence of a real-host install; the subsequent live PVE 9.2.21
+validation is recorded below. PVE 8 and the standalone remote-download launcher
+path remain unverified. The helper remains a project-maintained preview, not an
+accepted Community Helper Script.
+
+## Real Proxmox VE installation and HTTPS acceptance — 2026-10-28
+
+A complete installer run succeeded on amd64 Proxmox VE 9.2.21 using
+`debian-13-standard_13.6-1_amd64.tar.zst`. Both the installer dry-run and the
+installation completed for a disposable unprivileged Debian 13 CT (2 cores,
+2048 MiB RAM, 12 GiB `local-lvm`, DHCP on `vmbr0`). Gunicorn and nginx were
+active; the HTTPS health endpoint returned 200. The installed test vhost was
+bound to `127.0.0.1:443` with a self-signed localhost certificate. HTTP
+`/login` on the loopback bootstrap listener returned 426; all application and
+proxy listeners remained loopback-only.
+
+Two synthetic accounts exercised Secure-cookie login, registration-disabled
+behavior, same-item owner isolation, private decision/note persistence,
+read-only public sharing without private review data, wrong-owner revoke denial,
+share revocation, and signout. Saved sessions and workspace data survived an
+application-service restart and a reboot of the disposable CT. This was a
+stdlib HTTPS acceptance harness, not a real-browser test. The run did not test
+PVE 8, the standalone launcher's remote-download path, public/LAN exposure, or
+live AI inference. No PVE host package, network, or storage configuration was
+changed.
+
+At installer-fix revision `4ed222c`, the full Python suite passed (**571 tests**);
+`pip check`, Ruff lint/format, shell syntax checks, and all three Node suites
+also passed. The [contribution validation matrix](../CONTRIBUTING.md#4-validate-the-change)
+distinguishes these automated checks from the live PVE run.
 
 ## Prepublication hardening and CI
 

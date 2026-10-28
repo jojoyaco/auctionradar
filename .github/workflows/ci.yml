@@ -56,7 +56,8 @@ jobs:
           sudo --non-interactive env PYTHONDONTWRITEBYTECODE=1 "$(command -v python)" \
             -W error::ResourceWarning -m unittest -v \
             tests.test_proxmox_installer.BootstrapTests.test_real_shell_bootstrap_preserves_original_stdin \
-            tests.test_proxmox_installer.HostHandoffTests.test_real_launcher_package_builder_and_host_script_with_fake_pve_tools
+            tests.test_proxmox_installer.HostHandoffTests.test_real_launcher_package_builder_and_host_script_with_fake_pve_tools \
+            tests.test_admin_bootstrap.AdminBootstrapTests.test_installed_helper_creates_admin_with_production_configuration
 
       - name: Check installed dependencies
         run: python -m pip check

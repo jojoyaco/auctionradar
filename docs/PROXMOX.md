@@ -11,8 +11,9 @@ is required. This is **not an official Proxmox VE Community Script**.
 
 ### Requirements
 
-- Root access to a **Proxmox VE 8 or 9 amd64 node**. Run in **Node → Shell**,
-  never inside an existing LXC or VM.
+- Root access to an **amd64 Proxmox VE node**. The recorded real-host validation
+  covers PVE 9.2.21 only; PVE 8 has not been validated live. Run in **Node →
+  Shell**, never inside an existing LXC or VM.
 - An active storage supporting `rootdir`, another supporting `vztmpl` (one
   storage may support both), and an existing Linux bridge.
 - Outbound access to GitHub, Proxmox's Debian template repository, Debian's
@@ -167,13 +168,32 @@ This lower-level `--dry-run` validates local inputs without any PVE command.
 Repeat without `--dry-run` to install. The package includes licenses, notices,
 and empty configuration, not accounts, data, or installation history.
 
-## Validation and Community Scripts status
+## Real-host validation and Community Scripts status
 
 Automated tests cover guided planning, cancellation, unattended inputs,
 cluster-wide ID conflicts, source pinning, archive safety, template selection,
 installer handoff, and error handling with simulated PVE commands. Existing
-packaging and extracted-runtime checks also apply. **A complete installation on
-a real Proxmox host with Debian and nginx has not been validated.**
+packaging and extracted-runtime checks also apply.
+
+A complete guided installation and HTTPS acceptance run completed on an amd64
+Proxmox VE 9.2.21 host with the Debian template
+`debian-13-standard_13.6-1_amd64.tar.zst`. The disposable guest was an
+unprivileged Debian 13 LXC with 2 cores, 2048 MiB RAM, a 12 GiB `local-lvm`
+root disk, and DHCP on `vmbr0`. The installer dry-run and real install both
+completed; Gunicorn and nginx were active and `/healthz` returned 200.
+
+The web acceptance used a self-signed localhost certificate and an HTTPS test
+vhost bound only to `127.0.0.1:443`; the bootstrap listener remained on
+`127.0.0.1:8080`, where `/login` returned 426. Two synthetic accounts verified
+Secure-cookie login, owner isolation, private decision/note persistence,
+read-only sharing, cross-owner revoke denial, successful revocation, signout,
+and session/data persistence across both a web-service restart and guest reboot.
+No public or LAN listener was enabled.
+
+This run does **not** validate PVE 8, the standalone launcher's remote-download
+path, public/LAN exposure, or live AI inference. PVE host packages, networking,
+and storage configuration were not changed. The test used a local reviewed
+source checkout; it is not a release or Community Scripts certification.
 
 AuctionRadar is not listed in Community Helper Scripts. Their current process
 requires new scripts to be tested and reviewed in **DevScripts first**. No

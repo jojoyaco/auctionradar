@@ -4,6 +4,13 @@ Making the repository public, publishing a versioned artifact, and deploying a
 working installation are different operations. None is implied by a passing CI
 run. Do not change visibility or deploy merely to finish a contribution.
 
+The current preview has a [synthetic demonstration](DEMO.md), a
+[maintainer-confirmed private security contact](../SECURITY.md), and a
+[real PVE 9.2.21/Debian 13 validation record](VERIFICATION.md#real-proxmox-ve-installation-and-https-acceptance--2026-10-28).
+These close specific technical/documentation gaps, not every publication gate:
+historical media rights and qualified license review remain separate, and the
+live installation check does not cover PVE 8 or public deployment.
+
 ## Before making the repository public
 
 - [ ] Review the intended commit, all public refs and PR heads for secrets and
@@ -14,6 +21,9 @@ run. Do not change visibility or deploy merely to finish a contribution.
   fixture and third-party component. Publicly visible portal content is not
   automatically cleared for redistribution. Record permission/terms evidence
   or replace the material with appropriately licensed or synthetic content.
+- [ ] Review previous demo media across Git history, refs, CI artifacts, and
+  retained copies. Replacing current files with synthetic content does not erase
+  older portal images or establish legal clearance for historical material.
 - [ ] Keep the custom noncommercial license and third-party notices prominent.
   Do not call AuctionRadar OSI open source or change licensing without an
   explicit maintainer decision. Qualified legal review is a separate task.
