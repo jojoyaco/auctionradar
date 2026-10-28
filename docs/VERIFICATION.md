@@ -73,8 +73,8 @@ changed.
 
 After the final code commit, the full Python suite passed (**571 tests**);
 `pip check`, Ruff lint/format, shell syntax checks, and all three Node suites
-also passed. See the validation matrix above for the distinction between these
-automated checks and the live PVE run.
+also passed. The [contribution validation matrix](../CONTRIBUTING.md#4-validate-the-change)
+distinguishes these automated checks from the live PVE run.
 
 ## Prepublication hardening and CI
 
