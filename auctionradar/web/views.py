@@ -63,7 +63,7 @@ def _canonical_url(value: Optional[str]) -> Optional[str]:
     return urls.sanitise(value)
 
 
-def _safe_photo(photo: Any, item_id=None, share_token=None) -> Optional[dict]:
+def _safe_photo(photo: Any, item_id=None, share_token=None, *, public=False) -> Optional[dict]:
     if not isinstance(photo, dict):
         return None
     if photo.get("media_id") is not None:
@@ -75,6 +75,8 @@ def _safe_photo(photo: Any, item_id=None, share_token=None) -> Optional[dict]:
         return private
     url = photo.get("url")
     if not urls.is_safe_url(url):
+        return None
+    if public and not urls.is_safe_public_image_url(url, application_origin=request.host_url):
         return None
     return {
         "url": url,
@@ -579,7 +581,9 @@ def _safe_listing_payload(data: dict, item_id=None, share_token=None, *, public=
                 )
             )
         ]
-    out["photos"] = [p for p in (_safe_photo(p, item_id, share_token) for p in photos_raw) if p]
+    out["photos"] = [
+        p for p in (_safe_photo(p, item_id, share_token, public=public) for p in photos_raw) if p
+    ]
     out["photo_notice"] = None
     if not private_public and data.get("source_id") in ("boe", "aeat"):
         for limitation in data.get("enrichment_limitations") or []:
@@ -1452,14 +1456,66 @@ def _serialise_run(row: Any) -> dict:
 @bp.get("/api/runs")
 @login_required
 def api_runs_get():
-    rows = models.list_runs()
+    _recover_exited_run_workers()
     running = models.is_any_run_active()
+    rows = models.list_runs()
     return jsonify(
         {
             "runs": [_serialise_run(r) for r in rows],
             "running": running,
         }
     )
+
+
+def _runner_process_alive(pid: int) -> bool:
+    """Best-effort process check that treats Linux zombies as already exited."""
+    if not models.pid_alive(pid):
+        return False
+    proc_stat = Path(f"/proc/{pid}/stat")
+    if not Path("/proc").is_dir():
+        return True
+    try:
+        stat_text = proc_stat.read_text(encoding="utf-8")
+    except FileNotFoundError:
+        return False
+    except OSError:
+        return models.pid_alive(pid)
+    _command, separator, fields_text = stat_text.rpartition(")")
+    if not separator:
+        return models.pid_alive(pid)
+    fields = fields_text.strip().split()
+    return not fields or fields[0] not in {"Z", "X"}
+
+
+def _recover_exited_run_workers() -> None:
+    """Finalize detached runs whose worker exited before updating its row."""
+    active_statuses = {"queued", "running"}
+    for row in models.list_runs():
+        pid = row["pid"]
+        if row["status"] not in active_statuses or pid is None or _runner_process_alive(pid):
+            continue
+
+        # The worker may have finalized just before exiting; use a fresh row so
+        # a successful completion is never replaced with a startup-failure error.
+        current = models.get_run(row["run_id"])
+        if current is None or current["status"] not in active_statuses or current["pid"] != pid:
+            continue
+        try:
+            summary = json.loads(current["summary_json"] or "{}")
+        except (TypeError, ValueError):
+            summary = {}
+        if not isinstance(summary, dict):
+            summary = {}
+        summary["reason"] = "runner_exited_without_finalizing"
+        summary["runner_log_path"] = str(
+            Path(_webapp_config().DATA_DIR) / "runs" / f"{row['run_id']}.runner.log"
+        )
+        models.finalize_run(
+            row["run_id"],
+            status="error",
+            summary=summary,
+            error="runner process exited before finalizing the run",
+        )
 
 
 @bp.post("/api/runs")
@@ -1494,6 +1550,7 @@ def api_runs_post():
     run_id = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S") + "-" + secrets.token_hex(4)
     user = security.load_current_user()
     with db.transaction():
+        _recover_exited_run_workers()
         if models.is_any_run_active():
             return jsonify({"error": "run_already_active"}), 409
         models.create_run(run_id=run_id, created_by=user["id"], sources=list(enabled_sources))
@@ -1516,10 +1573,6 @@ def api_runs_post():
     # Carry through trusted AUCTIONRADAR_* settings (no shell injection — every value
     # comes from the validated settings overlay, never from request data).
     for k, v in (
-        (
-            "AUCTIONRADAR_RUNNER_TIMEOUT",
-            str(cli_overlay.get("timeout") or cfg.RUNNER_DEFAULT_TIMEOUT),
-        ),
         (
             "AUCTIONRADAR_RUNNER_MAX_PAGES",
             str(cli_overlay.get("max_pages") or cfg.RUNNER_DEFAULT_MAX_PAGES),
@@ -1550,14 +1603,22 @@ def api_runs_post():
     env = for_workspace(cfg, environ=env)
 
     try:
-        proc = subprocess.Popen(
-            [sys.executable, "-m", "auctionradar.web.runner", "--run-id", run_id],
-            cwd=str(_PROJECT_ROOT),
-            env=env,
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL,
-            start_new_session=True,
-        )
+        runner_log_dir = Path(cfg.DATA_DIR) / "runs"
+        runner_log_dir.mkdir(mode=0o700, parents=True, exist_ok=True)
+        runner_log_path = runner_log_dir / f"{run_id}.runner.log"
+        log_flags = os.O_WRONLY | os.O_CREAT | os.O_APPEND
+        if hasattr(os, "O_NOFOLLOW"):
+            log_flags |= os.O_NOFOLLOW
+        with os.fdopen(os.open(runner_log_path, log_flags, 0o600), "ab") as runner_log:
+            os.fchmod(runner_log.fileno(), 0o600)
+            proc = subprocess.Popen(
+                [sys.executable, "-m", "auctionradar.web.runner", "--run-id", run_id],
+                cwd=str(_PROJECT_ROOT),
+                env=env,
+                stdout=runner_log,
+                stderr=subprocess.STDOUT,
+                start_new_session=True,
+            )
         models.mark_run_started(run_id, pid=proc.pid)
     except OSError:
         models.finalize_run(

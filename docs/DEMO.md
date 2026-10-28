@@ -60,6 +60,14 @@ Changing the language interactively also produced a pre-existing
 recording stays in English and does not demonstrate language switching.
 Neither issue was changed as part of this documentation/media task.
 
+A later prepublication hardening change repairs both code paths and adds
+regressions: the API-to-detached-worker timeout handoff and failed-worker
+recovery are covered by `tests/test_queued_worker.py`, while the all-scenarios
+browser runner checks one language event per change with drafts/focus preserved.
+Those tests use synthetic fixtures; this existing recording remains a manual
+review demonstration, not a new end-to-end portal or AI demonstration. See
+[CI](CI.md) and [verification](VERIFICATION.md) for the current checks.
+
 ## Regenerate the GIF
 
 Run from the repository root with a full FFmpeg installation providing

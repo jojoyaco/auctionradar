@@ -48,6 +48,30 @@ These are simulated-host and extracted-application checks, **not** evidence of
 a successful end-to-end install on real Proxmox VE 8/9. The helper remains a
 project-maintained preview, not an accepted Community Helper Script.
 
+## Prepublication hardening and CI
+
+The later hardening change adds regressions for:
+
+- The real API → detached worker boundary, final run state, startup failure
+  recovery, owner-private diagnostic logs, and workspace isolation. Only the
+  public CLI in a disposable source copy is replaced with a no-network fixture.
+- Provider redirects, including a TLS-to-HTTP downgrade with synthetic
+  credentials, and Secure cookies for private production with registration off
+  as well as on.
+- Anonymous image-origin filtering and the actual Flask share CSP, including
+  direct and redirected private-network requests in a real browser.
+- A single notification per language change, preserved drafts/focus, saved-search
+  render synchronization, and page errors in additional browser contexts.
+- Usable static IPv4 host/gateway pairs and explicit host-side `pct enter`
+  instructions for initial administrator setup.
+
+The [GitHub Actions workflow](CI.md) runs Python 3.10/3.13 checks, browser/Node
+regressions, packaging/style checks, hash-pinned dependency auditing and redacted
+full-history secret scanning. Check the workflow result at the actual proposed
+SHA; configuration alone is not evidence of a passing GitHub run. CI does not
+establish legal clearance for demo assets or a real PVE installation. Follow the
+[publication checklist](RELEASING.md) before making broader release claims.
+
 ## Run the checks
 
 Install the pinned runtime dependencies, then run the Python and Node suites:
@@ -60,7 +84,7 @@ PYTHONDONTWRITEBYTECODE=1 .venv/bin/python -W error::ResourceWarning -m unittest
 node tests/ui_preferences.test.cjs
 node tests/review_detail_handler.test.cjs
 node tests/detail_next_handler.test.cjs
-bash -n deploy/product/create-lxc.sh deploy/product/install-lxc.sh deploy/product/auctionradar-create-admin
+bash -n install.sh deploy/product/create-lxc.sh deploy/product/install-lxc.sh deploy/product/auctionradar-create-admin
 ```
 
 Install the optional development tools and check Python style:
@@ -82,7 +106,7 @@ a Chrome or Chromium executable:
 ```sh
 AUCTIONRADAR_TEST_PYTHON="$PWD/.venv/bin/python" \
 AUCTIONRADAR_TEST_CHROME=/path/to/chrome \
-  node tests/run_browser_checks.cjs
+  node tests/run_browser_checks.cjs --all
 ```
 
 The optional legacy browser suite can be run with:
@@ -91,6 +115,14 @@ The optional legacy browser suite can be run with:
 AUCTIONRADAR_TEST_PYTHON="$PWD/.venv/bin/python" \
 AUCTIONRADAR_TEST_CHROME=/path/to/chrome \
   node tests/run_browser_checks.cjs --legacy
+```
+
+The separate public image-policy browser regression uses the same environment:
+
+```sh
+AUCTIONRADAR_TEST_PYTHON="$PWD/.venv/bin/python" \
+AUCTIONRADAR_TEST_CHROME=/path/to/chrome \
+  node tests/public_share_image_policy.test.cjs
 ```
 
 Browser previews bind to loopback and are removed when the tests finish. They use

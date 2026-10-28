@@ -22,7 +22,8 @@ the license metadata observed for the locked runtime dependencies.
 | itsdangerous | 2.2.0 | BSD-3-Clause | https://github.com/pallets/itsdangerous |
 | Jinja2 | 3.1.6 | BSD-3-Clause | https://github.com/pallets/jinja |
 | MarkupSafe | 3.0.4 | BSD-3-Clause | https://github.com/pallets/markupsafe |
-| pycparser | 3.12 | BSD-3-Clause | https://github.com/eliben/pycparser |
+| pycparser | 3.11 | BSD-3-Clause | https://github.com/eliben/pycparser |
+| typing_extensions | 4.16.0 | PSF-2.0 | https://github.com/python/typing_extensions |
 | Werkzeug | 3.1.9 | BSD-3-Clause | https://github.com/pallets/werkzeug |
 | WTForms | 3.2.2 | BSD-3-Clause | https://github.com/pallets-eco/wtforms |
 

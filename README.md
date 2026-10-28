@@ -156,8 +156,10 @@ AuctionRadar snapshot, builds the application package, and installs the services
 inside the **new** container. Defaults: **2 cores · 2 GB RAM · 12 GB disk · DHCP**.
 No manual release building or file transfers needed.
 
-**After installation:** configure HTTPS, then create an administrator from the
-container console with `auctionradar-create-admin admin`. The bootstrap web
+**After installation:** from the Proxmox node's root Shell, run
+`pct enter <CTID>` to enter the new container without a guest login/password.
+Configure HTTPS, then create an administrator inside it with
+`auctionradar-create-admin admin`. The bootstrap web
 listener stays private to the container until HTTPS is configured. No default
 passwords, open registration, or Internet exposure are enabled for you.
 
@@ -292,6 +294,9 @@ packaging checks, linting, and what passing tests do **not** establish.
 | [Architecture](docs/ARCHITECTURE.md) | Understand package boundaries and the search/review flow. |
 | [Contributing](CONTRIBUTING.md) | Open an issue first, name commits/PRs, and prepare a reviewable change. |
 | [Agent guide](AGENTS.md) | Work safely with coding agents in this repository. |
+| [Continuous integration](docs/CI.md) | Run the checks locally and understand GitHub Actions free-tier limits. |
+| [Security policy](SECURITY.md) | Report a vulnerability privately and understand support limits. |
+| [Publication checklist](docs/RELEASING.md) | Separate public-source readiness, artifact releases, and real installation evidence. |
 | [Verification](docs/VERIFICATION.md) | Run checks and understand their coverage. |
 | [Demo assets](docs/DEMO.md) | Reuse the video, GIF, and screenshots or regenerate the GIF. |
 | [Licensing](docs/LICENSING.md) | Understand permitted use and restrictions. |

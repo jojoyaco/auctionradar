@@ -29,14 +29,26 @@ async function checkSavedSearchUI(page) {
   const boatSearch=page.locator('.search-row').filter({hasText:'My browser boats'});
   await boatSearch.waitFor();
   expect((await boatSearch.innerText()).includes('1 matching results'),'Boat subscription must find boat fixture');
+  const viewResults=async searchRow=>{
+    const searchId=await searchRow.getAttribute('data-search-id');
+    const response=page.waitForResponse(response=>{
+      const url=new URL(response.url());
+      return url.pathname==='/api/items'&&url.searchParams.get('search_id')===searchId;
+    });
+    await searchRow.getByRole('button',{name:'View results',exact:true}).click();
+    const payload=await(await response).json();
+    const expectedIds=payload.items.map(item=>item.id);
+    await page.waitForFunction(ids=>JSON.stringify([...document.querySelectorAll('.item-card')].map(card=>card.dataset.itemId))===JSON.stringify(ids),expectedIds);
+    return payload;
+  };
   await page.locator('[data-action=new-saved-search]').click();
   await page.locator('#search-editor-name').fill('All browser assets');
   await page.getByRole('button',{name:'Save search',exact:true}).click();
   const allSearch=page.locator('.search-row').filter({hasText:'All browser assets'});
   await allSearch.waitFor();
   // The primary action is now "View results" (Ver resultados).
-  await boatSearch.getByRole('button',{name:'View results',exact:true}).click();
-  await page.locator('.item-card-title').filter({hasText:'Lancha de prueba'}).waitFor();
+  const boatResults=await viewResults(boatSearch);
+  expect(boatResults.total===1&&boatResults.items.length===1&&boatResults.items[0].asset_type==='boats','Boat search must return only the boat fixture');
   expect(await page.locator('.item-card').count()===1,'Boat search must not inherit the housing filter');
   expect(await page.locator('[data-filter=ai]').inputValue()==='shortlist','Default keeps pending assessments visible');
   const card=page.locator('.item-card').first();
@@ -53,8 +65,8 @@ async function checkSavedSearchUI(page) {
   expect(!/bedrooms/i.test(await page.locator('[data-drawer-body]').innerText()),'Boat details do not show housing fields');
   await page.keyboard.press('Escape');
   await page.locator('[data-nav=suscripciones]').click();
-  await allSearch.getByRole('button',{name:'View results',exact:true}).click();
-  await page.locator('.item-card').nth(4).waitFor();
+  const allResults=await viewResults(allSearch);
+  expect(allResults.items.length===5,'All-assets search must render all five fixtures before sort checks');
   for(const sort of ['price_asc','price_desc']) {
     const response=page.waitForResponse(r=>r.url().includes('/api/items?')&&r.url().includes('sort='+sort));
     await page.locator('[data-sort-trigger]').click();

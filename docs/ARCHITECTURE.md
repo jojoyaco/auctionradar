@@ -114,6 +114,13 @@ Importing the package does not query source portals. Saving a source does not
 fetch it. Background workers must receive effective workspace paths explicitly,
 not inherit another installation's configuration.
 
+The API keeps detached-runner stdout/stderr in an owner-private
+`runs/<run-id>.runner.log` (mode `0600`), not in a public artifact. Run-status
+polling and new-run requests reconcile workers that exited before finalizing
+their row. This is recovery on API activity, not a continuously running process
+supervisor. Review diagnostic logs before sharing them and include them only in
+private, appropriately protected backups.
+
 ## Saved-search assessment versus human review
 
 `searches.py` first applies structured criteria to the workspace catalog.

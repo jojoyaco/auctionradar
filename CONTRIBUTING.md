@@ -176,8 +176,8 @@ in issues, PRs, test fixtures, or recordings. Sanitize screenshots and URLs;
 public listing material may still carry personal data and third-party rights.
 
 For vulnerabilities, use **Security → Report a vulnerability** if that option
-is available. Otherwise ask a maintainer for a private reporting channel without
-publishing exploit details or sensitive data. Coordinate a private report or
+is available. See [SECURITY.md](SECURITY.md) for the private contact fallback and
+supported-version policy. Coordinate a private report or
 advisory **before** a security-fix PR; do not open a public vulnerability issue
 just to satisfy the issue-first rule. No response-time or support guarantee is
 implied by this guide.

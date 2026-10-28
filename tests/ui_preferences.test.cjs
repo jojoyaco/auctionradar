@@ -56,6 +56,7 @@ assert.equal(first.ui.t('Original user note / nota original'), 'Original user no
 assert.equal(first.ui.errorMessage('username_taken'), 'That username is already registered.');
 assert.equal(first.ui.errorMessage('invalid_current_password'), 'The current password is incorrect.');
 assert.equal(first.events.at(-1).type, 'auctionradar:languagechange', 'Language change must reach document listeners');
+assert.equal(first.events.filter(event => event.type === 'auctionradar:languagechange').length, 1, 'A locale update emits one canonical language event');
 first.button.callbacks.click[0]();
 assert.equal(first.ui.theme(), 'dark');
 assert.equal(first.storage.get('auctionradar.theme'), 'dark');
@@ -65,6 +66,7 @@ assert.equal(second.rootAttrs['data-theme'], 'dark', 'Theme must be applied befo
 second.ui.setLanguage('es');
 assert.equal(second.ui.errorMessage('username_taken'), 'Ese nombre de usuario ya está registrado.');
 assert.equal(second.ui.t('Foto {current} de {total}', {current:2,total:3}), 'Foto 2 de 3');
+assert.equal(second.events.filter(event => event.type === 'auctionradar:languagechange').length, 1, 'Each explicit locale update emits one canonical language event');
 const maps = new URL(second.ui.mapsURL({address:'Calle Prueba 12',municipality:'Gijón',province:'Asturias'}));
 assert.equal(maps.origin,'https://www.google.com');
 assert.equal(maps.pathname,'/maps/search/');

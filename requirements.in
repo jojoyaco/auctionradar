@@ -4,3 +4,6 @@ Flask==3.1.3
 Flask-WTF==1.3.0
 gunicorn==26.2.0
 cryptography==50.0.2
+# cryptography needs this on Python 3.10. Lock it on every interpreter so the
+# Python 3.13 dependency audit also checks the minimum-version dependency.
+typing_extensions==4.16.0
