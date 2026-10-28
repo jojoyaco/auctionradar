@@ -13,7 +13,7 @@ portals or contact provider, Proxmox, or production services.
 - Full `unittest` suite with `ResourceWarning` treated as an error, and `pip check`
   on both supported Python versions.
 - Poppler is installed on the ephemeral runner to exercise real optional PDF
-  conversion. The two installer simulations that require UID 0 run separately
+  conversion. The installer/admin-helper simulations that require UID 0 run separately
   with `sudo`; they use fake PVE tools, not a real Proxmox host. Their skips in
   the ordinary non-root suite are not treated as installation evidence.
 - Ruff lint/format, JavaScript and Bash syntax, all Node unit suites, and a wheel

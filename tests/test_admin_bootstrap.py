@@ -77,6 +77,7 @@ class AdminBootstrapTests(unittest.TestCase):
                 capture_output=True,
                 text=True,
                 check=False,
+                timeout=30,
             )
 
             self.assertEqual(result.returncode, 0, result.stderr)

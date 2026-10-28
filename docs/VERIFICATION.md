@@ -71,7 +71,7 @@ PVE 8, the standalone launcher's remote-download path, public/LAN exposure, or
 live AI inference. No PVE host package, network, or storage configuration was
 changed.
 
-After the final code commit, the full Python suite passed (**571 tests**);
+At installer-fix revision `4ed222c`, the full Python suite passed (**571 tests**);
 `pip check`, Ruff lint/format, shell syntax checks, and all three Node suites
 also passed. The [contribution validation matrix](../CONTRIBUTING.md#4-validate-the-change)
 distinguishes these automated checks from the live PVE run.

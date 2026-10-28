@@ -58,6 +58,7 @@ class CIWorkflowTests(unittest.TestCase):
         self.assertIn("NODE_PATH", WORKFLOW)
         self.assertIn("poppler-utils", WORKFLOW)
         self.assertIn("Run root-only simulated installer checks", WORKFLOW)
+        self.assertIn("tests.test_admin_bootstrap.AdminBootstrapTests", WORKFLOW)
 
     def test_node_entry_points_exist(self):
         for entry_point in re.findall(r"(?m)^\s+node (tests/[\w./-]+\.cjs)", WORKFLOW):

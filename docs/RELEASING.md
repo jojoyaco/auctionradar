@@ -4,6 +4,13 @@ Making the repository public, publishing a versioned artifact, and deploying a
 working installation are different operations. None is implied by a passing CI
 run. Do not change visibility or deploy merely to finish a contribution.
 
+The current preview has a [synthetic demonstration](DEMO.md), a
+[maintainer-confirmed private security contact](../SECURITY.md), and a
+[real PVE 9.2.21/Debian 13 validation record](VERIFICATION.md#real-proxmox-ve-installation-and-https-acceptance--2026-10-28).
+These close specific technical/documentation gaps, not every publication gate:
+historical media rights and qualified license review remain separate, and the
+live installation check does not cover PVE 8 or public deployment.
+
 ## Before making the repository public
 
 - [ ] Review the intended commit, all public refs and PR heads for secrets and
