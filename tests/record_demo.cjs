@@ -29,9 +29,8 @@ function optionsFromArgs(args) {
     index += 1;
   }
   const defaults = {
-    'work-root': path.join(os.tmpdir(), 'opencode/auctionradar-synthetic-demo-20261028/worker'),
+    'work-root': path.join(os.tmpdir(), 'opencode/auctionradar-demo'),
     'media-dir': path.join(ROOT, 'docs/media'),
-    'evidence-dir': path.join(ROOT, 'demo-evidence'),
     python: path.join(ROOT, '.venv/bin/python'),
     chrome: '/usr/bin/google-chrome',
     ffmpeg: 'ffmpeg',
@@ -39,6 +38,7 @@ function optionsFromArgs(args) {
   for (const [key, value] of Object.entries(defaults)) {
     if (!options[key]) options[key] = value;
   }
+  if (!options['evidence-dir']) options['evidence-dir'] = path.join(options['work-root'], 'evidence');
   return options;
 }
 
@@ -114,8 +114,8 @@ function isLoopbackUrl(value) {
     host === '::1' || (net.isIP(host) === 4 && host.startsWith('127.'));
 }
 
-function attachNetworkGuard(context, audit, stage) {
-  context.route('**/*', async route => {
+async function attachNetworkGuard(context, audit, stage) {
+  await context.route('**/*', async route => {
     const request = route.request();
     const url = request.url();
     const entry = {stage, method: request.method(), path: safeRequestPath(url)};
@@ -339,7 +339,7 @@ async function run() {
       viewport: VIEWPORT,
       serviceWorkers: 'block',
     });
-    attachNetworkGuard(bootstrapContext, audit, 'bootstrap');
+    await attachNetworkGuard(bootstrapContext, audit, 'bootstrap');
     const bootstrapPage = await bootstrapContext.newPage();
     bootstrapPage.setDefaultTimeout(15000);
     await bootstrapPage.goto(`${baseUrl}/register`, {waitUntil: 'domcontentloaded'});
@@ -389,7 +389,7 @@ async function run() {
       locale: 'en-GB',
       timezoneId: 'Europe/Madrid',
     });
-    attachNetworkGuard(captureContext, audit, 'recording');
+    await attachNetworkGuard(captureContext, audit, 'recording');
     await captureContext.addCookies(sessionCookies);
     await captureContext.addInitScript(() => {
       if (location.protocol !== 'http:' && location.protocol !== 'https:') return;

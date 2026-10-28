@@ -41,10 +41,12 @@ the pinned browser library into a disposable work directory. Supply local
 Chromium and FFmpeg executables:
 
 ```sh
-DEMO_WORK=/tmp/auctionradar-demo
+DEMO_WORK=/tmp/opencode/auctionradar-demo
 python3 -m venv "$DEMO_WORK/venv"
 "$DEMO_WORK/venv/bin/pip" install --require-hashes -r requirements.txt
 npm install --prefix "$DEMO_WORK/node" --ignore-scripts --no-audit --no-fund --no-save playwright-core@1.64.1
+export PLAYWRIGHT_BROWSERS_PATH="$DEMO_WORK/browser-tools"
+node "$DEMO_WORK/node/node_modules/playwright-core/cli.js" install --no-remove ffmpeg
 NODE_PATH="$DEMO_WORK/node/node_modules" node tests/record_demo.cjs \
   --python "$DEMO_WORK/venv/bin/python" \
   --chrome /path/to/chrome \
@@ -53,10 +55,18 @@ NODE_PATH="$DEMO_WORK/node/node_modules" node tests/record_demo.cjs \
   --evidence-dir "$DEMO_WORK/evidence"
 ```
 
-The script writes the four current media assets to `docs/media/`, keeps raw
-recording and disposable application state under `--work-root`, and writes
+Playwright's small recording helper is separate from the full FFmpeg executable
+passed with `--ffmpeg`; install both before recording. Chromium is supplied
+explicitly, so the command above does not download a browser.
+
+The script writes the four current media assets to `docs/media/`, uses a fresh
+temporary recording and application directory under `--work-root`, and writes
 redacted verification metadata plus theme screenshots and sample frames under
-`--evidence-dir`. It checks real API persistence, zero browser page errors,
+`--evidence-dir` (by default, `--work-root/evidence`). It removes the temporary
+recording and application state after its owned preview/browser processes exit;
+if shutdown cannot be verified, it leaves that directory for inspection. Use
+`--media-dir` to validate a new recording outside the checkout without replacing
+the committed assets. It checks real API persistence, zero browser page errors,
 zero non-loopback requests, image/video dimensions, H.264 output, and the GIF
 size ceiling. It does not run a source search or claim portal coverage.
 
