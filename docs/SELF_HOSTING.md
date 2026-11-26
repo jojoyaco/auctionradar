@@ -31,6 +31,86 @@ This enters a guest root shell without a guest login/password. Configure
 `auctionradar-create-admin admin`, sign in at your HTTPS
 hostname, and add your sources. There are no default credentials.
 
+## First search and optional AI review
+
+Start after HTTPS works and you can sign in with your own account. A fresh
+installation has no sources, listings, or AI provider. You do not need a BOE
+certificate to begin a public-source search.
+
+1. Open **Sources and access** (**Fuentes y accesos**) and choose **Add source**.
+   Enter a source ID, name, public HTTPS listing URL, supported adapter, and
+   asset types. Use a listing page for a portal supported by the selected
+   adapter, not a login page. Generic HTML support is not arbitrary website
+   compatibility. Save the source, then enable it: new sources are disabled,
+   and saving never contacts the portal.
+2. Open **Runs** (**Búsquedas**) and select **Queue run** (**Lanzar búsqueda**).
+   Wait for the run to finish and inspect its source errors and coverage before
+   interpreting the results. A failed or bounded request is not proof that a
+   portal has no listings. The installer does not enable scheduled runs.
+3. Open **Opportunities** (**Oportunidades**). Inspect a finding's published
+   facts and original portal link. Save a manual OK/KO decision or a private
+   note if useful. This workflow works without AI.
+4. Open **My searches** (**Mis búsquedas**) → **New search** (**Nueva búsqueda**)
+   to save the criteria you want to match against ingested findings. A saved
+   search is not a new portal connector and does not make unsupported sources
+   searchable. Start with broad filters; tighten them after inspecting results.
+5. Optionally configure AI as described below, then edit the saved search,
+   write its review prompt, enable AI, and save. Request **Evaluate**
+   (**Reevaluar**) or let a subsequent ingestion run assess matching findings.
+   Review explanations, cited evidence, and missing information, not just a
+   score. Evaluations are bounded; a partial result can require another pass.
+   AI never replaces your manual OK/KO decision.
+
+Example prompt for a personal housing search:
+
+> I am looking for a home for my own use. Flag explicitly stated occupancy
+> and sales of ownership shares. If possession or ownership information is
+> missing, mark the finding as needing review. Cite the supplied facts; do not
+> assume that the advertised amount is the total acquisition cost.
+
+### Configure an AI provider
+
+For a packaged installation, set these variables in
+`/etc/auctionradar/auctionradar.env`; do not put credentials in the repository:
+
+| Variable | What to provide |
+| --- | --- |
+| `AUCTIONRADAR_AI_PROVIDER` | `ollama` or `openai_compatible`; disabled by default. |
+| `AUCTIONRADAR_AI_BASE_URL` | The provider base URL reachable from the application container. |
+| `AUCTIONRADAR_AI_MODEL` | A model available on that provider. |
+| `AUCTIONRADAR_AI_API_KEY_FILE` | For an authenticated OpenAI-compatible provider, an absolute path to a private key file readable by the service account. |
+
+Restart `auctionradar-web.service` inside the application CT after changing
+its environment. Then enable AI separately for each saved search. Selecting
+a provider does not install a model or enable AI on every search.
+
+`localhost` inside the CT means the CT itself, not the Proxmox host or another
+machine. Use the provider's actual reachable address and supported transport;
+do not expose an unauthenticated model endpoint to the Internet. Consult your
+provider's documentation for its base URL, model availability, and credentials.
+
+The model receives your prompt and selected listing facts. A remote provider
+receives that data outside your server and may charge for requests. Never put
+secrets in prompts. Local model resource requirements are separate from the
+application's default 2 GB container allocation. See the
+[AI overview](../README.md#your-search-your-ai-reviewer) for review limitations.
+
+### First-run troubleshooting
+
+| Symptom | Check before retrying |
+| --- | --- |
+| Browser cannot reach the new CT | Installation leaves listeners on loopback. Complete [HTTPS setup](#production-https); do not expose Gunicorn or disable secure cookies as a workaround. |
+| Source list is empty | This is intentional. Add and enable sources in the account you are using; accounts have separate workspaces. |
+| No findings after saving a source | Saving does not fetch. Enable it and queue a run; inspect errors, adapter support, and coverage. |
+| Findings exist but a saved search has no matches | Review its category, location, and amount filters against the actual published facts. Missing fields can prevent a match. |
+| AI is unavailable or has not evaluated a search | Check provider configuration, model, key-file readability, and CT connectivity; restart after environment changes, then enable AI and supply a prompt on that saved search. |
+| AI says “Needs review” or returns a partial evaluation | Inspect missing evidence and processing limits. Do not convert uncertainty into a recommendation; continue the evaluation if appropriate. |
+
+When reporting a problem, include the commit/version, failed step, and redacted
+error text. Never attach certificates, API keys, private notes, databases, or
+share-token URLs. Follow the [security policy](../SECURITY.md) for sensitive
+reports.
+
 ## Isolation and data layout
 
 Install AuctionRadar in a dedicated instance. Do not copy accounts, certificates,

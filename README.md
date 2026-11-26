@@ -172,6 +172,7 @@ passwords, open registration, or Internet exposure are enabled for you.
 > Helper Script**. Downloading and running it trusts this repository with root
 > access—review the script first if preferred.
 
+[First search and optional AI review](docs/SELF_HOSTING.md#first-search-and-optional-ai-review) ·
 [Installation guide, unattended mode, and dry-run](docs/PROXMOX.md) ·
 [HTTPS and first login](docs/SELF_HOSTING.md#production-https) ·
 [Read the installer](install.sh)
